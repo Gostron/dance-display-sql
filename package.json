@@ -4,7 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/Gostron/dance-display-sql/issues"
   },
-  "homepage": "https://github.com/Gostron/dance-display-sql#readme"
+  "homepage": "https://github.com/Gostron/dance-display-sql#readme",
+  "dependencies": {
+    "express": "^4.16.1",
+    "morgan": "^1.9.0"
+  }
 }

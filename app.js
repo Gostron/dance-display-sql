@@ -1,16 +1,19 @@
-var mysql = require('mysql2')
 var _ = require('lodash')
+var express = require("express")
+var app = express()
 
-var connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'porsche',
-  database: 'dance-display'
+// Requests logging
+var morgan = require('morgan')
+app.use(morgan('tiny'))
+
+var mysql = require('./db_utilities/getter')
+mysql.initialize()
+
+app.get("/",function(req,res) {
+  mysql.makeQuery("SHOW TABLES", function (result, err) {
+    if (err) res.json(err)
+    else res.json(result)
+  })
 })
 
-connection.query('SHOW TABLES', function (err, result, fields) {
-    if (err) throw err
-    _.each(result, function (r) {
-        console.log(_.map(fields, function (f) { return r[f.name] }).join(' '))
-    })
-})
+app.listen(3000)
