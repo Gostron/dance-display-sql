@@ -1,15 +1,15 @@
 {
   "name": "dance-display-sql",
-  "version": "0.0.0",
-  "description": "TODO add a description",
+  "version": "0.0.1",
+  "description": "Server for handling dance competitions",
   "title": "danceDisplaySql",
-  "author": "dance-display-sql <>",
+  "author": "Gostron",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dance-display-sql/dance-display-sql.git"
+    "url": "https://github.com/Gostron/dance-display-sql.git"
   },
-  "readme": "TODO add a readme description",
-  "license": "TODO",
+  "readme": "General explanations about the server",
+  "license": "GPL 3.0",
   "main": "server.js",
   "scripts": {
     "start": "node server.js --config=settings.dev.json --log=logs",

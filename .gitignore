@@ -1,5 +1,5 @@
 #
-# danceDisplaySql - https://github.com/dance-display-sql/dance-display-sql.git
+# danceDisplaySql - https://github.com/Gostron/dance-display-sql.git
 #
 # Copyright (c) 2017 dance-display-sql
 #
@@ -18,3 +18,8 @@ apidoc/
 
 # Settings
 settings.*.json
+dance-display-sql.json
+
+# Logs
+logs/
+

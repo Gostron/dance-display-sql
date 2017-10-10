@@ -3,7 +3,7 @@
 
 # danceDisplaySql
 
-> TODO add here summary description
+> Server for handling dance competitions
 
 _Generates with [Yeoman][yeoman] and the generator <https://github.com/blueskyfish/generator-express-restful-mysql.git>._
 
@@ -67,137 +67,17 @@ Name                      | Type    | Required | Description
 `--config=/path/to`       | string  | yes      | The filename with the path to the configuration json file.
 
 
-### Setting File
-
-> An Example of the settings is finding at `settings.example.json`
-
-Name                | Type    | Default     | Description
---------------------|---------|-------------|------------------------------------------
-`server.host`       | string  | `localhost` | The server host for listening.
-`server.port`       | number  |             | The server port for listening. The server port is required now!
-`db.host`           | string  | `localhost` | The database host.
-`db.port`           | number  | `3306`      | The database port.
-`db.user`           | string  |             | The database user.
-`db.password`       | string  |             | The password for the database user.
-`db.database`       | string  |             | The database name.
-`logger.namespaces` | object  |             | The namespace configuration of the logger.
-`logger.separator`  | string  | `.`         | The separator for the namespace.
-`logger.appender`   | string  | `console`   | The appender setting (`console` or `file`).
-
-
-**Example:**
-
-```json
-{
-    "server": {
-        "host": "127.0.0.1",
-        "port": 65001
-    },
-    "db": {
-        "port": 3306,
-        "host": "localhost",
-        "user": "database user",
-        "password": "database password",
-        "database": "datebase name",
-        "connectionLimit": 10
-    },
-    "logger": {
-        "namespaces": {
-            "root": "info",
-            "temo": "debug",
-            "temo.db": "debug",
-            "temo.shutdown": "info"
-        },
-        "separator": ".",
-        "appender": "console"
-    }
-}
-```
-
-
-## Home Directory
-
-The home directory is calculated from the configuration filename.
-
-*Note: The pid file is written in the home directory!*
-
-**Sub Directories**
-
-* `logs` The log files are stored in this directory.
-
-## MySql Transaction
-
-> This is a feature since 0.6.0
-
-The MySql database is supported to work with transaction. Since the version `0.6.0` the module `db.js` is support the transaction.
-
-Here a short example for usage:
-
-* Insert a new user
-* Email address is unique
-
-```js
-/**
- * @param {object} user a user with the properties "name" and "email".
- * @return {Q.promise} the promise resolve callback receive the new user id.
- */
-module.exports.registerUser = function (user) {
-	return db.getTransaction(function (conn) {
-		return conn.beginTransaction()
-			.then(function () {
-				var SQL_INSERT = 'INSERT INTO `users` (name, email) VALUES({name}, {email})';
-				return conn.query(SQL_INSERT, user);
-			})
-			.then(function (result) {
-				return conn.commit(result);
-			})
-			.then(function (result) {
-				return result.insertId;
-			})
-			.fail(function (reason) {
-				return conn.rollback(reason);
-				// or
-				// return conn.rollback({
-				//   code: 'EMAIL_ALREADY_USE',
-				//   message: 'The email is already use'
-				// })
-			})
-			.finally(function () {
-				conn.release();
-			});
-		});
-};
-```
-
-
-## Logging
-
-There are 2 types as the log messages are written.
-
-* `console`: The log messages are written to the console.
-* `file`: The log messages are written into a file.
-
-The setting `logger.appender` controls the writing of the log messages. The parameter `--log` specifies path name where the log messages are written.
-
 ## Generate Documentation
 
-There are to commands for generating the jsDoc and the apidoc for the endpoints:
+There are two commands for generating the jsDoc and the apidoc for the endpoints:
 
 * jsDoc: `npm run jsdoc` generates the jsdoc in the directory `jsdoc`
 * apidoc: `npm run apidoc` generates the apidoc of the endpoints in the directory `apidoc`.
 
-**Steps**
-
-```sh
-$ npm run jsdoc
-$ npm run apidoc
-```
-
-
 ## License
 
 ```
-TODO Choose a license
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 ```
 
 
