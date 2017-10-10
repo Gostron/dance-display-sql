@@ -1,6 +1,0 @@
-#
-# danceDisplaySql - https://github.com/dance-display-sql/dance-display-sql.git
-#
-# Copyright (c) 2017 dance-display-sql
-#
-# Add here your help message.
