@@ -4,5 +4,7 @@
   "version": "0.0.1",
   "description": "API to be used with any client trying to leverage information concerning the competitions",
   "url" : "http://localhost:3000",
-  "forceLanguage": "en"
+  "template": {
+    "forceLanguage": "en"
+  }
 }

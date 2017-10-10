@@ -46,44 +46,43 @@ const httpStatus = require('app/http-status');
 module.exports.execute = function (req, res, cb) {
   const url = req.originalUrl;
 
+  // Function given to services to be used as a call
   function __sender(promise, propertyName) {
+    // If function is called without a promise, no result !
     if (!promise.then) {
       res.status(httpStatus.SERVER_ERROR)
         .send({
           status: 'error',
           message: 'Could not found a result'
-        });
-      return;
+        })
+      return
     }
+    // Is a promise is given, catch its rejection or return the result
     promise.then(
       function (result) {
-        var data = {
-          status: 'okay'
-        };
-        data[propertyName] = result;
-        res.send(data);
+        var data = { status: 'ok' }
+        data[propertyName] = result
+        res.send(data)
       },
       function (reason) {
-        var data = {
+        res.status(httpStatus.BAD_REQUEST).send({
           status: 'error',
           error: reason
-        };
-        res.status(httpStatus.BAD_REQUEST)
-          .send(data);
+        })
       }
-    );
+    )
   }
+
+  // Calling the callback (as is the role)
   try {
-
-    cb(__sender);
-
+    cb(__sender)
   } catch (e) {
-    e = e.message;
-    const message = util.format('[dds]: %s (%s)', e, url);
+    e = e.message
+    const message = util.format('[dds]: %s (%s)', e, url)
     res.status(httpStatus.BAD_REQUEST)
       .send({
         status: 'error',
         message: message
-      });
+      })
   }
-};
+}

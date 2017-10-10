@@ -119,7 +119,7 @@ function _readConfig(pathname) {
     if (err) {
       return done.reject({
         code: 'CONFIG_NOT_FOUND',
-        message: 'Could not found the configuration file "' + pathname + '"!',
+        message: 'Could not find the configuration file "' + pathname + '"!',
         error: err.message || 'no additional information'
       });
     }
@@ -129,7 +129,7 @@ function _readConfig(pathname) {
     } catch (e) {
       done.reject({
         code: 'CONFIG_PARSE',
-        message: 'Invalidate JSON format on "' + pathname + '"!',
+        message: 'Invalid JSON format of the file "' + pathname + '"!',
         error: !e ? 'null' : e.message || 'no additional information'
       });
     }
@@ -155,14 +155,14 @@ function _killProcess(pid, stopWaiting) {
       // pid is unknown !!
       return done.resolve();
     }
-    console.info('send the signal "SIGTERM" to the other process "%s" !!', pid);
+    console.info('sending the signal "SIGTERM" to the other process "%s" !!', pid);
     if (!_sendKill(pid, 'SIGTERM')) {
       // error?
       return done.reject(util.format('Could not terminate the process [%s]', pid));
     }
     // wait duration and check whether other process is running
     setTimeout(function () {
-      console.info('try to send the signal "SIGKILL" to the other process "%s" !!', pid);
+      console.info('trying to send the signal "SIGKILL" to the other process "%s" !!', pid);
       if (_checkProcess(pid)) {
         // send the signal "SIGKILL" to the other process!!!
         if (!_sendKill(pid, 'SIGKILL')) {
@@ -206,7 +206,7 @@ function _shutdown(name, cb) {
     cb(name);
   }
   catch (e) {
-    console.warn('Error has occurred: %s', e.message);
+    console.warn('An error has occurred: %s', e.message);
   }
   finally {
     process.exit();

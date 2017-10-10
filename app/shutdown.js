@@ -27,7 +27,7 @@ const mListeners = [];
  */
 module.exports.addListener = function (cb) {
   if (_.isFunction(cb) && mListeners.indexOf(cb) < 0) {
-    logger.debug('add a listener');
+    logger.debug('adding a listener');
     mListeners.push(cb);
   }
 };
@@ -40,5 +40,5 @@ module.exports.shutdown = function (name) {
   _.forEach(mListeners, function (cb) {
     cb(name);
   });
-  logger.info('application is shutdown "', name, '"!');
+  logger.info('Application "', name, '" has been shutdown!');
 };

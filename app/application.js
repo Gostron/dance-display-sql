@@ -119,7 +119,7 @@ module.exports.start = function (settings) {
   } else {
     // missing the port for the server...
     process.nextTick(function () {
-      done.reject('Missing the property "server.port"!');
+      done.reject('The property "server.port" is missing!');
     });
   }
 

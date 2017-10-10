@@ -17,15 +17,15 @@
  * @requires module:dds/logger
  */
 
-'use strict';
+'use strict'
 
-const _     = require('lodash');
-const mysql = require('mysql');
-const Q     = require('q');
+const _     = require('lodash')
+const mysql = require('mysql')
+const Q     = require('q')
 
-const args       = require('app/args');
-const configUtil = require('app/config-util');
-const logger     = require('app/logger').getLogger('dds.db');
+const args       = require('app/args')
+const configUtil = require('app/config-util')
+const logger     = require('app/logger').getLogger('dds.db')
 
 
 /**
@@ -37,7 +37,7 @@ function Conn(conn) {
   /**
    * @type {IConnection}
    */
-  this.conn = conn;
+  this.conn = conn
 }
 
 /**
@@ -47,19 +47,19 @@ function Conn(conn) {
  * @return {Q.promise} the promise callback with the array of rows from the query as parameter.
  */
 Conn.prototype.query = function (sql, values) {
-  var done = Q.defer();
+  var done = Q.defer()
   this.conn.query(sql, values, function (err, rows) {
-    _handleQueryFunc(done, err, rows);
-  });
-  return done.promise;
-};
+    _handleQueryFunc(done, err, rows)
+  })
+  return done.promise
+}
 
 /**
  * Releases the connection
  */
 Conn.prototype.release = function () {
-  this.conn.release();
-};
+  this.conn.release()
+}
 
 /**
  * Executes a sql statement within a transaction bracket.
@@ -103,7 +103,7 @@ Conn.prototype.release = function () {
  * @return {Q.promise}
  */
 Conn.prototype.beginTransaction = function () {
-  var done = Q.defer();
+  var done = Q.defer()
   this.conn.beginTransaction(function (err) {
     if (err) {
       return done.reject({
@@ -113,13 +113,13 @@ Conn.prototype.beginTransaction = function () {
         errNumber: err.errno || -1,
         errStack: err.stack || '-',
         sqlState: err.sqlState || '-'
-      });
+      })
     }
-    logger.info('Begin transaction');
-    done.resolce(true);
-  });
-  return done.promise;
-};
+    logger.info('Begin transaction')
+    done.resolce(true)
+  })
+  return done.promise
+}
 
 /**
  * Sends a commit to the database.
@@ -132,7 +132,7 @@ Conn.prototype.beginTransaction = function () {
  * @return {Q.promise} resolve with the result
  */
 Conn.prototype.commit = function (result) {
-  var done = Q.defer();
+  var done = Q.defer()
   this.conn.commit(function (err) {
     if (err) {
       done.reject({
@@ -142,13 +142,13 @@ Conn.prototype.commit = function (result) {
         errNumber: err.errno || -1,
         errStack: err.stack || '-',
         sqlState: err.sqlState || '-'
-      });
+      })
     }
     // routes with resolve the given result
-    logger.info('commit transaction');
-    return done.resolve(result);
-  });
-  return done.promise;
+    logger.info('commit transaction')
+    return done.resolve(result)
+  })
+  return done.promise
 };
 
 /**
@@ -161,13 +161,13 @@ Conn.prototype.commit = function (result) {
  *
  */
 Conn.prototype.rollback = function (reason) {
-  var done = Q.defer();
+  var done = Q.defer()
   this.conn.rollback(function () {
     // routes with rejection the given reason
-    logger.info('rollback transaction');
-    done.reject(reason);
-  });
-  return done.promise;
+    logger.info('rollback transaction')
+    done.reject(reason)
+  })
+  return done.promise
 };
 
 /**
@@ -182,7 +182,7 @@ var mPool = null;
  */
 module.exports.start = function (settings) {
   if (!mPool) {
-    logger.info('create connection pool.');
+    logger.info('Creating the connection pool...');
     mPool = mysql.createPool({
       host:     configUtil.getSetting(settings, 'db.host', 'localhost'),
       port:     configUtil.getSetting(settings, 'db.port', 3306),
@@ -193,23 +193,24 @@ module.exports.start = function (settings) {
       queryFormat: function (query, values) {
         if (!values) {
           // without a value object
-          return query;
+          return query
         }
-        return query.replace(/\{(\w+)}/g, function (text, key) {
-          if (values.hasOwnProperty(key)) {
-            return mPool.escape(values[key]);
-          }
-          return text;
-        });
+        return query.replace(/\{\{(\w+)\}\}/g, function (text, key) {
+          if (values.hasOwnProperty(key)) return mPool.escapeId(values[key])
+          return text
+        }).replace(/\{(\w+)\}/g, function (text, key) {
+          if (values.hasOwnProperty(key)) return mPool.escape(values[key])
+          return text
+        })
       }
-    });
-    logger.info('add the shutdown callback for close the connection pool...');
+    })
+    logger.info('Adding the shutdown callback to close the connection pool...')
     require('app/shutdown').addListener(function (name) {
       if (mPool && _.isFunction(mPool.end)) {
-        mPool.end(function () {});
+        mPool.end(function () {})
       }
       mPool = null;
-      logger.info('pool is shutdown. Reason of "', name, '"...');
+      logger.info('The connection pool was shutdown. Reason of "', name, '"...')
     });
   }
 };

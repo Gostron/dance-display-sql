@@ -51,7 +51,7 @@ const configureOptions = {
   path:       args.getLogPath(),
   shutdown: function (name) {
     shutdown.shutdown(name);
-    console.info('Server is shutdown with "%s"', name);
+    console.info('Server has been shutdown by "%s"', name);
   }
 };
 
@@ -66,10 +66,10 @@ configure(configureOptions)
         logger = require('app/logger').start(settings);
         // print the header
         _printHeaderAndHero(logger);
-        logger.info('Logger is started...');
+        logger.info('Logger started...');
         // initialize DB
         require('app/db').start(settings);
-        logger.info('Connection pool is started successful...');
+        logger.info('The connection pool started successfully...');
 
         // TODO Add things for starting or initialize with settings
 
@@ -78,7 +78,7 @@ configure(configureOptions)
           .start(settings)
           .then(function () {
             // now the express application is listen
-            logger.info('application is running ...');
+            logger.info('Application is running ...');
           }, function (reason) {
             logger.warn(reason);
             process.exit(1);
