@@ -52,7 +52,7 @@ The following ideas can and/or will be implemented:
 
 ## License
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)]
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) GNU General Public Licence v3.0
 
 [github]: https://github.com
 [yeoman]: http://yeoman.io
