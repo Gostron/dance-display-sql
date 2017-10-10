@@ -47,7 +47,7 @@ const SQL_SHOW_DATABASES_ALL = [
 /**
  *
  * @param {ShowDatabasesOptions} options
- * @return {promise} the promise resolve callback has the parameter, that has all databases from mysql server.
+ * @return {promise} the promise callback with all databases as parameter.
  */
 module.exports.execute = function (options) {
   return db.getConnection()

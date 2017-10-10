@@ -24,3 +24,5 @@ dance-display-sql.pid
 # Logs
 logs/
 
+# Visual Studio Code Customization
+.vscode/

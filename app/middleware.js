@@ -5,7 +5,7 @@
  */
 
 /**
- * Middleware handler for read the http header field and measure the request time.
+ * Middleware handler to read the http header field and measure the request time.
  *
  * @module dds/middleware
  *
@@ -17,7 +17,7 @@
 const logger  = require('app/logger').getLogger('dds.middleware');
 
 /**
- * measureTime - Returns the middleware, that measure the time of every request.
+ * measureTime - Returns the middleware, that measures the time of every request.
  *
  * @return {Function} middleware function.
  */

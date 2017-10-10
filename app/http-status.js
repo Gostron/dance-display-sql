@@ -5,7 +5,7 @@
  */
 
 /**
- * Manages the sending of an promise callback.
+ * Manages the sending of a promise callback.
  *
  * @module dds/http-status
  */

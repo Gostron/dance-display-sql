@@ -1,7 +1,8 @@
 {
-  "name": "",
+  "name": "Dance display API",
+  "title": "Dance display API",
   "version": "0.0.1",
-  "description": "TODO Add a description",
-  "title": "",
-  "url" : "http://localhost:18080/"
+  "description": "API to be used with any client trying to leverage information concerning the competitions",
+  "url" : "http://localhost:3000",
+  "forceLanguage": "en"
 }

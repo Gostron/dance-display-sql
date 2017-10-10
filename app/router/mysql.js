@@ -36,15 +36,15 @@ const router = express.Router({
  * @api {get} /mysql/show/databases Get Databases
  * @apiName GetDatabases
  * @apiGroup Mysql
- * @apiDescription Returns a list of database
- * @apiParam {String} [pattern] a filter pattern. All `*`is replaced with `%`.
+ * @apiDescription Returns a list of databases
+ * @apiParam {String} [pattern] a filter pattern. All `*` are replaced with `%`.
  * @apiVersion 0.0.1
  * @apiExample {curl} Example usage:
- *     curl -i http://localhost:18080/mysql/show/databases
- *     curl -i http://localhost:18080/mysql/show/databases?pattern=Test*DB
+ *     curl -i http://localhost:3000/mysql/show/databases
+ *     curl -i http://localhost:3000/mysql/show/databases?pattern=Test*DB
  *
  * @apiSuccess {String} status always `okay`
- * @apiSuccess {[]String} database the array with the database names.
+ * @apiSuccess {[]String} database an array with databases' names.
  *
  * @apiSuccessExample {json} Success response
  *     HTTP/1.1 200 OK

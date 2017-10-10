@@ -4,7 +4,7 @@
  * Copyright (c) 2017 dance-display-sql
  *
  * Purpose:
- * Configure the application.
+ * Configuring the application.
  *
  * Note:
  * Don't use the logger here, because it is not initialized at this time.
@@ -33,23 +33,23 @@ const UNKNOWN_PID = 0;
 
 /**
  * @name ConfigureOptions
- * @property {string}   [configFilename] the filename of the configuration file.
+ * @property {string}   [configFilename] the filename of the configuration file
  * @property {string}   [name] the name of the application
- * @property {string}   [path] the path to the pid file.
- * @property {function} [shutdown] the function is calling by the signal shutdown.
+ * @property {string}   [path] the path to the pid file
+ * @property {function} [shutdown] the function is called by the signal shutdown
  */
 
 
 /**
- * Configure the application.
+ * Configure the application
  *
- * * First step is to stop a former application that pid is written in PID file.
- * * Second step is write the own pid into the PID file
- * * Next step is to register the exit callback function.
- * * Last step is the read the configuration file and create the Configuration instance.
+ * * First step is to stop a former application (its pid is written in the PID file)
+ * * Second step is to write the new pid into the PID file
+ * * Third step is to register the exit callback function
+ * * Last step is to read the configuration file and create the configuration instance
  *
  * @param {ConfigureOptions} options the options
- * @return the promise resolve callback has the parameter as a JSON settings instance.
+ * @return the promise callback with the JSON settings instance as parameter.
  */
 module.exports = function configure (options) {
   const appName      = options.name || 'dds-server';
@@ -188,7 +188,7 @@ function _sendKill(pid, signal) {
 }
 
 //
-// Writes the own pid into the PID file.
+// Writes the new pid into the PID file.
 //
 function _writePid(pidFilename) {
   var done = Q.defer();

@@ -31,7 +31,7 @@ const mHelp = mParams.help || false;
 
 
 /**
- * Is manages the verbose messages
+ * Manages the verbose messages
  *
  * @return {boolean}
  */
@@ -40,7 +40,7 @@ module.exports.isVerbose = function () {
 };
 
 /**
- * Application should show the help messages when the argument is `--help`
+ * Application should show the help message when argument `--help` is present
  *
  * @return {boolean}
  */
@@ -49,16 +49,16 @@ module.exports.isHelp = function () {
 };
 
 /**
- * Returns the filename of the configuration.
+ * Returns the filename of the configuration file.
  *
- * @return {string|null} the filename to the configuration
+ * @return {string|null} the filename of the configuration file
  */
 module.exports.getConfigFilename = function () {
   return mParams.config || null;
 };
 
 /**
- * Returns the path to the log files and the place of the pid file
+ * Returns the path of the log files and the location of the pid file
  *
  * @return {String|null} the path or null
  */

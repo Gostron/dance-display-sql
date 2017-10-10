@@ -5,7 +5,7 @@
  */
 
 /**
- * The application of express.
+ * The express application
  *
  * @module dds/application
  *
@@ -38,16 +38,16 @@ const app = express();
 const DEFAULT_HOST    = 'localhost';
 
 /**
- * starts the application.
+ * Starts the application.
  *
  * @param {object} settings
- * @return {promise} the promise resolve callback is returns after the application is listening.
+ * @return {promise} the promise callback is returned after the application starts slistening.
  */
 module.exports.start = function (settings) {
 
-  // add the config instance under "config".
+  // adds the config instance under "config".
   app.set('settings', settings);
-  // set the application title
+  // sets the application title
   app.set('title', info.getAppTitle());
 
   // Middlewares...
@@ -72,13 +72,13 @@ module.exports.start = function (settings) {
    * @apiDescription Shows the information about the application
    * @apiVersion 0.0.1
    * @apiExample {curl} Example usage:
-   *     curl -i http://localhost:18080/about
+   *     curl -i http://localhost:3000/about
    *
    * @apiSuccess {String} name the application name
    * @apiSuccess {String} title the title of the application
    * @apiSuccess {String} version the version of the application
    * @apiSuccess {String} vendor the author / company of the application
-   * @apiSuccess {String} description a short description.
+   * @apiSuccess {String} description a short description
    *
    * @apiSuccessExample {json} Success response:
    *     HTTP/1.1 200 OK
@@ -113,13 +113,13 @@ module.exports.start = function (settings) {
   if (port > 0) {
     // starts the listening of the express application...
     app.listen(port, host, function () {
-      logger.info('Server is listen http://', host, ':', port);
+      logger.info('Server is listening on http://', host, ':', port);
       done.resolve(true);
     });
   } else {
     // missing the port for the server...
     process.nextTick(function () {
-      done.reject('Missing the setting property "server.port"!');
+      done.reject('Missing the property "server.port"!');
     });
   }
 

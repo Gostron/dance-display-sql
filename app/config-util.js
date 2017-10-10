@@ -17,11 +17,11 @@
 const _ = require('lodash');
 
 /**
- * Returns the value of the name element in the setting object.
+ * Returns the value of the named element in the settings object.
  *
- * @param {object} settings the setting object
- * @param {string} name the name of the setting element
- * @param {*} defValue the default value if the element is not exist.
+ * @param {object} settings the settings object
+ * @param {string} name the name of the settings element
+ * @param {*} defValue the default value if the element does not exist.
  * @return {*} The value
  */
 module.exports.getSetting = function (settings, name, defValue) {

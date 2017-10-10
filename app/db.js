@@ -5,7 +5,7 @@
  */
 
 /**
- * Handle all database manipulations
+ * Handles all database manipulations
  *
  * @module dds/db
  *
@@ -29,7 +29,7 @@ const logger     = require('app/logger').getLogger('dds.db');
 
 
 /**
- * Creates an connection wrapper
+ * Creates a connection wrapper
  * @param {IConnection} conn
  * @constructor
  */
@@ -44,7 +44,7 @@ function Conn(conn) {
  *
  * @param {string} sql the sql statement
  * @param {object} [values] the parameter entity
- * @return {Q.promise} the promise resolve callback has the array of rows from the query.
+ * @return {Q.promise} the promise callback with the array of rows from the query as parameter.
  */
 Conn.prototype.query = function (sql, values) {
   var done = Q.defer();
@@ -55,7 +55,7 @@ Conn.prototype.query = function (sql, values) {
 };
 
 /**
- * Release the connection
+ * Releases the connection
  */
 Conn.prototype.release = function () {
   this.conn.release();
@@ -63,12 +63,12 @@ Conn.prototype.release = function () {
 
 /**
  * Executes a sql statement within a transaction bracket.
- * 
+ *
  * **Example**
- * 
+ *
  * ```js
  * const db = require('app/db');
- * 
+ *
  * db.getConnection()
  *   .then(function (conn) {
  *      return conn.beginTransaction()
@@ -99,7 +99,7 @@ Conn.prototype.release = function () {
  *        });
  *   });
  * ```
- * 
+ *
  * @return {Q.promise}
  */
 Conn.prototype.beginTransaction = function () {
@@ -122,12 +122,12 @@ Conn.prototype.beginTransaction = function () {
 };
 
 /**
- * Send a commit to the database.
- * 
- * In case of success, the given parameter "result" is routing to the resolve.
- * 
+ * Sends a commit to the database.
+ *
+ * In case of success, the given parameter "result" is routed to the resolve.
+ *
  * Example see at Conn#beginTransaction()
- * 
+ *
  * @param {*} result the query result from the former sql statement.
  * @return {Q.promise} resolve with the result
  */
@@ -152,8 +152,8 @@ Conn.prototype.commit = function (result) {
 };
 
 /**
- * Send a rollback to the database.
- * 
+ * Sends a rollback to the database.
+ *
  * Example see at Conn#beginTransaction()
  *
  * @param {*} reason the query error from the former sql statement.
@@ -176,7 +176,7 @@ Conn.prototype.rollback = function (reason) {
 var mPool = null;
 
 /**
- * start - Try to initialize the database connection pool!
+ * start - Try to initialize the database connection pool
  *
  * @param {object} settings the settings instance.
  */
@@ -216,12 +216,12 @@ module.exports.start = function (settings) {
 
 /**
  * Returns an open connection.
- * 
+ *
  * **Example**
- * 
+ *
  * ```js
  * const db = require('app/db');
- * 
+ *
  * db.getConnection()
  *   .then(function (conn) {
  *     const values = {
@@ -270,7 +270,7 @@ module.exports.getConnection = function () {
 };
 
 /**
- * The query execute a sql statement.
+ * The query executes a sql statement.
  * @param {string} sql the sql statement
  * @param {object} [values] the parameter entity
  * @return {Q.promise} the promise resolve callback has the array of rows from the query.
