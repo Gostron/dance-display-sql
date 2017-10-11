@@ -5,7 +5,7 @@
  */
 
 /**
- * @module dds/service/select-by-id
+ * @module dds/service/select-all
  *
  * @requires lodash
  * @requires module:dds/args
@@ -23,10 +23,10 @@ const logger = require('app/logger').getLogger('dds.service')
 
 
 /**
- * @name SelectByIdOptions
+ * @name SelectAllOptions
  * @property {string} [object] the type of object
- * @property {integer} [id] the id
- * @property {boolean} [extended] sets the mode (extended or simple) for the query
+ * @property {integer} [number] the maximum number of results
+ * @property {integer} [minId] the minimum id (pagination)
  * @property {array} [fields] fields to select
  */
 
@@ -34,7 +34,7 @@ const logger = require('app/logger').getLogger('dds.service')
  * List of known object types
  * @type {object}
  */
-const SQL_SELECT_BY_ID_OBJECTS_TABLES = {
+const SQL_SELECT_ALL_OBJECTS_TABLES = {
   'competition': 'competition',
   'contestant': 'contestant',
   'couple': 'couple',
@@ -54,43 +54,40 @@ const SQL_SELECT_BY_ID_OBJECTS_TABLES = {
  * Query statement for the simple mode
  * @type {string}
  */
-const SQL_SELECT_BY_ID_SIMPLE =
-  'SELECT {{fields}} FROM {{table}} WHERE id = {id} LIMIT 1'
-
-
-/**
- * Query statement for the extended mode
- * @type {string}
- */
-const SQL_SELECT_BY_ID_EXTENDED =
-  'SELECT {{fields}} FROM {{table}} WHERE id = {id} LIMIT 1'
+const SQL_SELECT_ALL =
+  'SELECT {{fields}} FROM {{table}} WHERE id > {id} LIMIT {results}'
 
 
 /**
  *
- * @param {SelectByIdOptions} options
+ * @param {SelectAllOptions} options
  * @return {promise} the promise callback with the object queried as parameter.
  */
 module.exports.execute = function (options) {
   // Input handling
-  if (!options.id) return Promise.reject("An 'id' must be given")
   if (!options.object) return Promise.reject("An object type must be given")
-  const table = SQL_SELECT_BY_ID_OBJECTS_TABLES[options.object]
-  if (!table) return Promise.reject("The object given is unknown. Values are: " + Object.keys(SQL_SELECT_BY_ID_OBJECTS_TABLES).join(', '))
+  const table = SQL_SELECT_ALL_OBJECTS_TABLES[options.object]
+  if (!table) return Promise.reject("The object given is unknown. Values are: " + Object.keys(SQL_SELECT_ALL_OBJECTS_TABLES).join(', '))
 
-  // TODO extended mode (headache incoming..)
+  var id = options.id || 0
+  var results = Math.min(100, (options.results || 100))
 
   // SQL Querying
   return db.getConnection()
     .then(function (conn) {
+      // TODO extended mode (headache incoming..)
       const parameters = {
         fields: '*',
         table: table,
-        id: options.id
+        id: id,
+        results: results
       }
-      return conn
-        .query(SQL_SELECT_BY_ID_EXTENDED, parameters)
-        .then(function (results) { return results[0] })
-        .finally(function () { conn.release() })
+      return conn.query(SQL_SELECT_ALL, parameters)
+        .then(function (results) {
+          return results
+        })
+        .finally(function () {
+          conn.release()
+        })
     })
 }

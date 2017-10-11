@@ -18,28 +18,29 @@
  * @requires dds/shutdown
  */
 
-'use strict';
+'use strict'
 
 //
 // add the current directory to the require paths.
 //   -> all internal modules have the save require path "app/services/..." or "app/info"
 //
-require('app-module-path').addPath(__dirname);
+require('app-module-path').addPath(__dirname)
 
-const fs        = require('fs');
-const path      = require('path');
+const fs        = require('fs')
+const path      = require('path')
 
-const info      = require('app/info');
-const args      = require('app/args');
-const configure = require('app/configure');
-const shutdown  = require('app/shutdown');
+const info      = require('app/info')
+const args      = require('app/args')
+const configure = require('app/configure')
+const shutdown  = require('app/shutdown')
 
+process.env.http_proxy = 'http://d29\\mx5273:Carambar42@10.25.32.212:8080'
 
 if (args.isHelp()) {
-  const content = fs.readFileSync(path.join(__dirname, 'man.txt'));
-  _printHeaderAndHero();
-  console.info(content.toString());
-  process.exit(0);
+  const content = fs.readFileSync(path.join(__dirname, 'man.txt'))
+  _printHeaderAndHero()
+  console.info(content.toString())
+  process.exit(0)
 }
 
 /**
@@ -50,26 +51,26 @@ const configureOptions = {
   name:       info.getAppName(),
   path:       args.getLogPath(),
   shutdown: function (name) {
-    shutdown.shutdown(name);
-    console.info('Server has been shutdown by "%s"', name);
+    shutdown.shutdown(name)
+    console.info('Server has been shutdown by "%s"', name)
   }
-};
+}
 
 //
 // Try to prepare the startup and returns the settings object.
 //
 configure(configureOptions)
   .then(function (settings) {
-      var logger = null;
+      var logger = null
       try {
         // initialize Logger
-        logger = require('app/logger').start(settings);
+        logger = require('app/logger').start(settings)
         // print the header
-        _printHeaderAndHero(logger);
-        logger.info('Logger started...');
+        _printHeaderAndHero(logger)
+        logger.info('Logger started...')
         // initialize DB
-        require('app/db').start(settings);
-        logger.info('The connection pool started successfully...');
+        require('app/db').start(settings)
+        logger.info('The connection pool started successfully...')
 
         // TODO Add things for starting or initialize with settings
 
@@ -78,16 +79,16 @@ configure(configureOptions)
           .start(settings)
           .then(function () {
             // now the express application is listen
-            logger.info('Application is running ...');
+            logger.info('Application is running ...')
           }, function (reason) {
-            logger.warn(reason);
-            process.exit(1);
+            logger.warn(reason)
+            process.exit(1)
           });
       } catch (e) {
         if (logger) {
-          logger.warn('[dds] ', e);
+          logger.warn('[dds] ', e)
         } else {
-          logger.warn('[dds] ', e);
+          logger.warn('[dds] ', e)
         }
       }
     },

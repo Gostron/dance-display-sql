@@ -50,6 +50,7 @@ Conn.prototype.query = function (sql, values) {
   var done = Q.defer()
   this.conn.query(sql, values, function (err, rows) {
     _handleQueryFunc(done, err, rows)
+    if (err) { logger.debug(this.sql) }
   })
   return done.promise
 }

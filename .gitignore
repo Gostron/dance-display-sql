@@ -20,6 +20,7 @@ apidoc/
 settings.*.json
 dance-display-sql.json
 dance-display-sql.pid
+app/auth/config.js
 
 # Logs
 logs/

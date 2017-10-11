@@ -3,9 +3,9 @@
 
 # Dance Display SQL
 
-> Server for handling dance competitions. It is the evolution of the no-sql v1
+> Server (REST API) for handling dance competitions. It is the evolution of the no-sql offline v1
 
-_Generates with [Yeoman][yeoman] and the generator <https://github.com/blueskyfish/generator-express-restful-mysql.git>._
+_Generated with [Yeoman][yeoman] and the generator <https://github.com/blueskyfish/generator-express-restful-mysql.git>._
 
 ## Table of Content
 
@@ -49,6 +49,9 @@ The following ideas can and/or will be implemented:
 * Video service for contestants
 	* Multi-POV stream
 	* Automatic compilation for a round and a contestant
+* Subscription service for contestants
+	* Automatic subscription with age filters and categories
+	* Mail sending, subscription lists, etc
 
 ## License
 
