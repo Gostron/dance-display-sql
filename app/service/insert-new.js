@@ -8,6 +8,7 @@
  * @module dds/service/insert-new
  *
  * @requires lodash
+ * @requires joi
  * @requires module:dds/args
  * @requires module:dds/db
  * @requires module:dds/logger
@@ -16,7 +17,7 @@
 'use strict'
 
 const _      = require('lodash')
-
+const Joi    = require('joi')
 const args   = require('app/args')
 const db     = require('app/db')
 const logger = require('app/logger').getLogger('dds.service')
@@ -40,12 +41,77 @@ const SQL_INSERT_NEW_OBJECTS_TABLES = {
   'judge': 'judge',
   'mark': 'mark',
   'event': 'event',
-  'progress': 'progress',
   'dance': 'dance',
   'template': 'template',
   'subtemplate': 'subtemplate',
   'stage': 'stage',
   'age': 'age'
+}
+
+const minStringLength = 2
+const maxStringLength = 30
+const JoiID = Joi.number().integer().min(1)
+const JoiDate = Joi.date().min(new Date('1910/01/01'))
+const JoiNI = Joi.number().integer().min(0)
+const JoiStr = Joi.string().min(minStringLength).max(maxStringLength)
+
+const SQL_INSERT_NEW_VALIDATION_PER_OBJECT = {
+  'competition': Joi.object().keys({
+    date_begin: JoiDate.required(),
+    date_end: JoiDate.required(),
+    name: JoiStr.required(),
+    subname: Joi.string()
+  }).required(),
+  'contestant': Joi.object().keys({
+    firstname: JoiStr.required(),
+    lastname: JoiStr.required(),
+    birthdate: JoiDate.max(new Date())
+  }).required(),
+  'couple': Joi.object().keys({
+    id_male: JoiID.required(),
+    id_female: JoiID.required()
+  }).required(),
+  'judge': Joi.object().keys({
+    country: JoiStr.required(),
+    firstname: JoiStr.required(),
+    lastname: JoiStr.required()
+  }).required(),
+  'mark': Joi.object().keys({
+    is_note: Joi.boolean().required(),
+    value: JoiNI.required(),
+    id_category_stage_couple: JoiID.required(),
+    id_judge: JoiID.required()
+  }).required(),
+  'event': Joi.object().keys({
+    is_break: Joi.boolean(),
+    has_presentation: Joi.boolean(),
+    id_presentation_dance: JoiID,
+    message: Joi.string(),
+    schedule: JoiDate,
+    duration: JoiNI,
+    position: JoiNI,
+    id_competition: JoiID.required(),
+    id_category_stage: JoiID
+  }).required(),
+  'category': Joi.object().keys({
+    name: Joi.string().required(),
+    label: Joi.string(),
+    id_competition: JoiID.required(),
+    id_template: JoiID.required(),
+    id_subtemplate: JoiID.required(),
+    id_age: JoiID.required()
+  }).required(),
+  'dance': JoiStr.required(),
+  'age': JoiStr.required(),
+  'template': JoiStr.required(),
+  'subtemplate': Joi.object().keys({
+    name: JoiStr.required(),
+    id_template: JoiID.required()
+  }).required(),
+  'stage': Joi.object().keys({
+    name: JoiStr.required(),
+    has_notes: Joi.boolean().required()
+  }).required()
 }
 
 
@@ -70,8 +136,28 @@ module.exports.execute = function (options) {
   const table = SQL_INSERT_NEW_OBJECTS_TABLES[options.object]
   if (!table) return Promise.reject("The object given is unknown. Values are: " + Object.keys(SQL_INSERT_NEW_OBJECTS_TABLES).join(', '))
 
-  var values = _.map(options.values, function (v) { return _.map(fields, function (f) { return v[f] }) })
-  console.log(values)
+  // Passage à la validation de chaque objet
+  var validationSchema = SQL_INSERT_NEW_VALIDATION_PER_OBJECT[options.object]
+  var errors = []
+  _.each(options.values, function (value) {
+    var error = Joi.validate(value, validationSchema).error
+    if (error) errors.push({
+      message: error.details[0].message.replace(/"/ig, "'"),
+      element: value
+    })
+  })
+
+  // Pour tous les objets sans erreur
+  var values = _.filter(options.values, function (v) { return !Joi.validate(v, validationSchema).error })
+  if (values.length < 1) {
+    return Promise.reject({
+      message: "No object passed validation.",
+      errors: errors
+    })
+  }
+
+  fields = Object.keys(values[0])
+  values = _.map(values, function (v) { return _.map(fields, function (f) { return v[f] }) })
 
   // SQL Querying
   return db.getConnection()
@@ -83,6 +169,7 @@ module.exports.execute = function (options) {
       }
       return conn.query(SQL_INSERT_NEW, parameters)
         .then(function (results) {
+          if (errors) results.errors = errors
           return results
         })
         .finally(function () {

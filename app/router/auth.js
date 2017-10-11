@@ -58,7 +58,7 @@ const router = express.Router({
  *       }
  *     }
  */
-const scope = [ 'profile', 'email' ]
+const scope = ['profile', 'email']
 
 router.get('/google', passport.authenticate('google', { scope: scope }))
 
