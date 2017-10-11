@@ -34,8 +34,6 @@ const args      = require('app/args')
 const configure = require('app/configure')
 const shutdown  = require('app/shutdown')
 
-process.env.http_proxy = 'http://d29\\mx5273:Carambar42@10.25.32.212:8080'
-
 if (args.isHelp()) {
   const content = fs.readFileSync(path.join(__dirname, 'man.txt'))
   _printHeaderAndHero()
