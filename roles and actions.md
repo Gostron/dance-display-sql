@@ -50,5 +50,18 @@ Create competitions and manage them :
 Action | API Calls
 ------ | ---------
 Grant permission | /api/competition/_:id_/grant/_:userId_/_:permissionType_<br>/api/user/_:userId_/grant/_:permissionType_
-Create object | /api/contestant/new (__POST__)<br>/api/couple/new (__POST__)<br>/api/competition/new (__POST__)<br>/api/judge/new (__POST__)<br>/api/mark/new (__POST__)<br>/api/competition/_:id_/category/new (__POST__)<br>/api/category/_:id_/stage/new (__POST__)<br>/api/age/new (__POST__)<br>/api/template/new (__POST__)<br>/api/subtemplate/new (__POST__)<br>/api/dance/new (__POST__)<br>/api/competition/_:id_/event/new (__POST__)
+Create object | \
+/api/age/new (__POST__)<br>\
+/api/category/_:id_/stage/new (__POST__)<br>\
+/api/competition/new (__POST__)<br>\
+/api/competition/_:id_/category/new (__POST__)<br>\
+/api/competition/_:id_/event/new (__POST__)<br>\
+/api/contestant/new (__POST__)<br>\
+/api/couple/new (__POST__)<br>\
+/api/dance/new (__POST__)<br>\
+/api/judge/new (__POST__)<br>\
+/api/mark/new (__POST__)<br>\
+/api/subtemplate/new (__POST__)<br>\
+/api/template/new (__POST__)<br>\
+
 Associate object | /api/competition/_:id_/couple/_:id_ (__POST__)<br>/api/category/_:id_/judge/_:id_ (__POST__)<br>/api/category/_:id_/stage/_:id_ (__POST__)<br>/api/category/_:id_/couple/_:id_ (__POST__)
