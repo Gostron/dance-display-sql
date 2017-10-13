@@ -154,7 +154,7 @@ router.get('/:object/get', function (req, res) {
  *       ]
  *     }
  */
-router.get('/:object/get', function (req, res) {
+router.get('/:object/:id/add', function (req, res) {
   executor.execute(req, res, function (sender) {
     /** @type {SelectAllOptions} */
     const options = {
