@@ -13,10 +13,10 @@ Roles that interact with the model are defined to be :
 
 Every level has his own actions (clearances) in addition with the layers under it
 
-                  -Top Admin-
-              -----Organizer-----
-          ---Contestant-Judge-Help---
-      -------------Visitor-------------
+                                      -Top Admin-
+                                  -----Organizer-----
+                             ----Contestant-Judge-Help----
+                        ----------------Visitor----------------
 
 ## Actions per role
 
@@ -44,3 +44,11 @@ Create competitions and manage them :
 
 ### Visitor
 - Check basic data
+
+## API Calls per action
+
+Action | API Calls
+------ | ---------
+Grant permission | /api/competition/:id/grant/:userId/:permissionType
+/api/user/:userId/grant/:permissionType
+Create object | /api/contestant/new (**_POST_**)
