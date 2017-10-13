@@ -13,8 +13,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js --config=settings.dev.json --log=logs",
-    "jsdoc":  "./node_modules/.bin/jsdoc -r -c ./jsdoc-config.json -d ./jsdoc",
-    "apidoc": "./node_modules/.bin/apidoc -f \".*\\.js$\" -i ./app -o ./apidoc"
+    "jsdoc": "./node_modules/.bin/jsdoc -r -c jsdoc-config.json -d jsdoc",
+    "apidoc": "./node_modules/.bin/apidoc -f \".*\\.js$\" -i ./app -o apidoc",
+    "docs": "npm run jsdoc && npm run apidoc"
   },
   "bin": {
     "dds": "server.js"
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "apidoc": "0.17.5",
+    "concurrently": "^3.5.0",
     "docdash": "0.4.0",
     "jsdoc": "3.4.3",
     "mocha": "3.2.0"

@@ -5,7 +5,7 @@
  */
 
 /**
- * @module dds/router/mysql
+ * @module dds/router/api
  *
  * @requires express
  * @requires dds/executor
@@ -37,9 +37,9 @@ const router = express.Router({
 //
 
 /**
- * @api {get} /api/getById Get Item By id
+ * @api {get} /api/:object/get/:id Get Item By id
  * @apiName GetItemById
- * @apiGroup Mysql
+ * @apiGroup API
  * @apiDescription Returns the requested object, selected by its id
  * @apiParam {String} [object] the type of the object.
  * @apiParam {Integer} [id] the id of the object
@@ -47,13 +47,12 @@ const router = express.Router({
  * @apiParam {Array} [fields] the fields to be returned
  * @apiVersion 0.0.1
  * @apiExample {curl} Example usage:
- *     curl -i http://localhost:3000/api/getById?id=23&object=contestant
- *     curl -i http://localhost:3000/api/show/databases?id=5123&object=mark&fields=notation
+ *     curl -i http://localhost:3000/api/contestant/get/23
+ *     curl -i http://localhost:3000/api/mark/get/514?fields=notation,id
  *
  * @apiSuccess {Object} result the object request
  *
  * @apiSuccessExample {json} Success response
- *     HTTP/1.1 200 OK
  *     {
  *       "result": {
  *         id: 23,
@@ -63,12 +62,12 @@ const router = express.Router({
  *       }
  *     }
  */
-router.get('/getById', function (req, res) {
+router.get('/:object/get/:id', function (req, res) {
   executor.execute(req, res, function (sender) {
     /** @type {SelectByIdOptions} */
     const options = {
-      object: req.query.object,
-      id: req.query.id,
+      object: req.params.object,
+      id: req.params.id,
       extended: ['true', '1', 'yes'].indexOf((req.query.extended || '').toLowerCase()) >= 0,
       fields: (req.query.fields || '*').split(',')
     }
@@ -77,23 +76,22 @@ router.get('/getById', function (req, res) {
 })
 
 /**
- * @api {get} /api/getAll Get All
- * @apiName GetAll
- * @apiGroup Mysql
+ * @api {get} /api/:object/get Get All objects
+ * @apiName GetAllItems
+ * @apiGroup API
  * @apiDescription Returns the requested objects, ordered by id
  * @apiParam {String} [object] the type of the object.
- * @apiParam {Integer} [id] the minimum id of the object (not included)
+ * @apiParam {Integer} [first] the minimum id of the object (not included)
  * @apiParam {Integer} [results] the maximum number of results (100 maximum)
  * @apiParam {Array} [fields] the fields to be returned
  * @apiVersion 0.0.1
  * @apiExample {curl} Example usage:
- *     curl -i http://localhost:3000/api/getAll?object=contestant
- *     curl -i http://localhost:3000/api/getAll?object=contestant&id=31&results=30
+ *     curl -i http://localhost:3000/api/contestant/get
+ *     curl -i http://localhost:3000/api/mark/get?first=31&results=30
  *
  * @apiSuccess {Object} result the object request
  *
  * @apiSuccessExample {json} Success response
- *     HTTP/1.1 200 OK
  *     {
  *       "results": [
  *         {
@@ -110,12 +108,12 @@ router.get('/getById', function (req, res) {
  *       ]
  *     }
  */
-router.get('/getAll', function (req, res) {
+router.get('/:object/get', function (req, res) {
   executor.execute(req, res, function (sender) {
     /** @type {SelectAllOptions} */
     const options = {
-      object: req.query.object,
-      id: req.query.id,
+      object: req.params.object,
+      id: req.query.first,
       fields: (req.query.fields || '*').split(','),
       results: req.query.results
     }
@@ -124,15 +122,61 @@ router.get('/getAll', function (req, res) {
 })
 
 /**
- * @api {get} /api/insertNew Insert new
+ * @api {get} /api/:object/:id/add Adds an object associated with the selected object
+ * @apiName AddLookup
+ * @apiGroup API
+ * @apiDescription Returns validation about the objects created
+ * @apiParam {String} [object] the type of the object to associated objects with
+ * @apiParam {Integer} [id] the id of the object to associate objects with
+ * @apiParam {String} [typeToCreate] The type of the object that will be created
+ * @apiParam {Array} [fields] the fields to be returned
+ * @apiVersion 0.0.1
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost:3000/api/contestant/get
+ *     curl -i http://localhost:3000/api/mark/get?first=31&results=30
+ *
+ * @apiSuccess {Object} result the object request
+ *
+ * @apiSuccessExample {json} Success response
+ *     {
+ *       "results": [
+ *         {
+  *          id: 32,
+  *          firstname: 'John',
+  *          lastname: 'Doe',
+  *          birthdate: '1900-01-01 00:00:01'
+ *         }, {
+  *          id: 33,
+  *          firstname: 'Jane',
+  *          lastname: 'Doe',
+  *          birthdate: '1900-01-01 00:00:02'
+ *         }
+ *       ]
+ *     }
+ */
+router.get('/:object/get', function (req, res) {
+  executor.execute(req, res, function (sender) {
+    /** @type {SelectAllOptions} */
+    const options = {
+      object: req.params.object,
+      id: req.query.first,
+      fields: (req.query.fields || '*').split(','),
+      results: req.query.results
+    }
+    sender(selectAll.execute(options), 'results')
+  })
+})
+
+/**
+ * @api {post} /api/:object/new Create a new object
  * @apiName InsertNew
- * @apiGroup Mysql
- * @apiDescription Inserts new values of the object type requested
+ * @apiGroup API
+ * @apiDescription Inserts new values of the object type specified
  * @apiParam {String} [object] the type of the objcts
  * @apiParam {Array} [fields] the values to insert
  * @apiVersion 0.0.1
  * @apiExample {curl} Example usage:
- *     curl -i http://localhost:3000/api/insertNew?object=contestant -X POST -d "firstname":"John","lastname":"Doe","birthdate":"1900/01/01 00:00:01"
+ *     curl -i http://localhost:3000/api/contestant/new -X POST -d "firstname":"John","lastname":"Doe","birthdate":"1900/01/01 00:00:01"
  *
  * @apiSuccess {Object} result the result returned
  *
@@ -147,11 +191,11 @@ router.get('/getAll', function (req, res) {
  *       }
  *     }
  */
-router.post('/insertNew', function (req, res) {
+router.post('/:object/new', function (req, res) {
   executor.execute(req, res, function (sender) {
     /** @type {SelectByIdOptions} */
     const options = {
-      object: req.query.object,
+      object: req.params.object,
       values: req.body
     }
     sender(insertNew.execute(options), 'result')

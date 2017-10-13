@@ -18,7 +18,7 @@
  * @requires module:dds/config-util
  * @requires module:dds/logger
  * @requires module:dds/middleware
- * @requires module:dds/router/mysql
+ * @requires module:dds/router/api
  * @requires module:dds/router/auth
  * @requires module:dds/auth/passport
  */
@@ -38,7 +38,7 @@ const logger          = require('app/logger').getLogger('dds')
 
 const middleware      = require('app/middleware')
 
-const routerMySQL     = require('app/router/mysql')
+const routerAPI       = require('app/router/api')
 const passportMW      = require('app/auth/passport')(passport)
 const routerAuth      = require('app/router/auth')(passport)
 
@@ -68,7 +68,7 @@ module.exports.start = function (settings) {
   app.use(session({
     secret: 'this is my secret dance-display-sql secret for express-session',
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: {
       maxAge: 60000
     }
@@ -77,13 +77,6 @@ module.exports.start = function (settings) {
   app.use(passport.initialize())
   app.use(passport.session())
 
-  /*
-  const scope = [ 'profile', 'email' ]
-
-  app.get('/auth/google/callback', passport.authenticate('google', { successRedirect: '/auth/google/profile', failureRedirect: '/auth/google' }))
-  app.get('/auth/google/profile', function (req, res) { res.json({ user: req.user }) })
-  app.get('/auth/google', passport.authenticate('google', { scope: scope }))*/
-
   app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*")
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
@@ -91,7 +84,7 @@ module.exports.start = function (settings) {
   })
 
   // Routers...
-  app.use('/api', routerMySQL)
+  app.use('/api', routerAPI)
   app.use('/auth', routerAuth)
 
   // Endpoints...

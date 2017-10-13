@@ -30,16 +30,21 @@ const configAuth       = require('./config')
 
 module.exports = function (passport) {
 
-  /*
   // used to serialize the user for the session
   passport.serializeUser(function(user, done) {
+    console.log({ logFrom: 'serializeUser', log: user })
+    var propertyToSerialize = {
+      'google': 'googleId',
+      'twitter': 'twitterId',
+      'facebook': 'facebookId'
+    }
     done(null, user.id)
   })
 
   // used to deserialize the user
   passport.deserializeUser(function(id, done) {
     mysql.getUser({
-      authType: 'google',
+      authType: 'sql',
       key: id
     }).then(function (result) {
       done(null, result)
@@ -48,12 +53,113 @@ module.exports = function (passport) {
     }).catch(function (err) {
       done(err, null)
     })
-  })*/
+  })
 
   // code for login (use('local-login', new LocalStategy))
   // code for signup (use('local-signup', new LocalStategy))
-  // code for facebook (use('facebook', new FacebookStrategy))
-  // code for twitter (use('twitter', new TwitterStrategy))
+
+  // =========================================================================
+  // FACEBOOK ================================================================
+  // =========================================================================
+  passport.use(new FacebookStrategy(
+    {
+      clientID          : configAuth.facebookAuth.clientID,
+      clientSecret      : configAuth.facebookAuth.clientSecret,
+      callbackURL       : configAuth.facebookAuth.callbackURL,
+      passReqToCallback : true
+    },
+    function(req, token, refreshToken, profile, done) {
+
+      console.log(req.user)
+
+      var user = {
+        provider: 'facebook',
+        facebookId: profile.id,
+        facebookToken: token,
+        facebookName: profile.name.givenName + ' ' + profile.name.familyName,
+        facebookEmail: (profile.emails || [{}])[0].value
+      }
+
+      process.nextTick(function() {
+        mysql.getUser({
+          authType: 'facebook',
+          key: profile.id
+        }).then(function (result) {
+          if (!result || result.length < 1) {
+            mysql.addUser({
+              authType: 'facebook',
+              currentUser: (req.user || {}).id,
+              properties: user
+            }).then(function (result) {
+              done(null, Object.assign({}, result, { provider: 'google' }))
+            }, function (reason) {
+              done(reason, null)
+            }).catch(function (err) {
+              done(err, null)
+            })
+          } else {
+            done(null, Object.assign({}, result, { provider: 'facebook' }))
+          }
+        }, function (reason) {
+          done(reason, null)
+        }).catch(function (err) {
+          done(err, null)
+        })
+      })
+    })
+  )
+
+  // =========================================================================
+  // TWITTER =================================================================
+  // =========================================================================
+  passport.use(new TwitterStrategy(
+    {
+      consumerKey       : configAuth.twitterAuth.consumerKey,
+      consumerSecret    : configAuth.twitterAuth.consumerSecret,
+      callbackURL       : configAuth.twitterAuth.callbackURL,
+      includeEmail      : true,
+      passReqToCallback : true
+    },
+    function(req, accessToken, refreshToken, profile, done) {
+
+      console.log(req.user)
+
+      var user = {
+        provider: 'twitter',
+        twitterId: profile.id,
+        twitterToken: accessToken,
+        twitterName: profile.username,
+        twitterDisplayName: profile.displayName
+      }
+
+      process.nextTick(function() {
+        mysql.getUser({
+          authType: 'twitter',
+          key: profile.id
+        }).then(function (result) {
+          if (!result || result.length < 1) {
+            mysql.addUser({
+              authType: 'twitter',
+              currentUser: (req.user || {}).id,
+              properties: user
+            }).then(function (result) {
+              done(null, Object.assign({}, result, { provider: 'google' }))
+            }, function (reason) {
+              done(reason, null)
+            }).catch(function (err) {
+              done(err, null)
+            })
+          } else {
+            done(null, Object.assign({}, result, { provider: 'twitter' }))
+          }
+        }, function (reason) {
+          done(reason, null)
+        }).catch(function (err) {
+          done(err, null)
+        })
+      })
+    })
+  )
 
   // =========================================================================
   // GOOGLE ==================================================================
@@ -65,33 +171,37 @@ module.exports = function (passport) {
       callbackURL       : configAuth.googleAuth.callbackURL,
       passReqToCallback : true
     },
-    function(token, refreshToken, profile, done) {
-      // make the code asynchronous
-      // User.findOne won't fire until we have all our data back from Google
+    function(req, token, refreshToken, profile, done) {
+
+      console.log(req.user)
+
+      var user = {
+        provider: 'google',
+        googleId: profile.id,
+        googleToken: token,
+        googleName: profile.displayName,
+        googleEmail: profile.emails[0].value
+      }
+
       process.nextTick(function() {
         mysql.getUser({
           authType: 'google',
           key: profile.id
         }).then(function (result) {
-          console.log(result)
           if (!result || result.length < 1) {
             mysql.addUser({
               authType: 'google',
-              properties: {
-                googleId: profile.id,
-                googleToken: token,
-                googleName: profile.displayName,
-                googleEmail: profile.emails[0].value
-              }
+              currentUser: (req.user || {}).id,
+              properties: user
             }).then(function (result) {
-              done(null, result)
+              done(null, Object.assign({}, result, { provider: 'google' }))
             }, function (reason) {
               done(reason, null)
             }).catch(function (err) {
               done(err, null)
             })
           } else {
-            done(null, result)
+            done(null, Object.assign({}, result, { provider: 'google' }))
           }
         }, function (reason) {
           done(reason, null)

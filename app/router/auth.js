@@ -30,45 +30,26 @@ const router = express.Router({
 //
 // Endpoints...
 //
-
-/**
- * @api {get} /auth/google Authenticate against google
- * @apiName GoogleAuth
- * @apiGroup Authentication
- * @apiDescription Allows to authenticate against google
- * @apiParam {String} [object] the type of the object.
- * @apiParam {Integer} [id] the id of the object
- * @apiParam {Boolean} [extended] Sets the mode (extended or simple) for the query
- * @apiParam {Array} [fields] the fields to be returned
- * @apiVersion 0.0.1
- * @apiExample {curl} Example usage:
- *     curl -i http://localhost:3000/mysql/getById?id=23&object=contestant
- *     curl -i http://localhost:3000/mysql/show/databases?id=5123&object=mark&fields=notation
- *
- * @apiSuccess {Object} result the object request
- *
- * @apiSuccessExample {json} Success response
- *     HTTP/1.1 200 OK
- *     {
- *       "result": {
- *         id: 23,
- *         firstname: 'John',
- *         lastname: 'Doe',
- *         birthdate: '1900-01-01 00:00:01'
- *       }
- *     }
- */
-const scope = ['profile', 'email']
-
-router.get('/google', passport.authenticate('google', { scope: scope }))
-
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
 router.get('/google/callback', passport.authenticate('google', {
-  scope: scope,
-  successRedirect: '/auth/google/profile',
+  scope: ['profile', 'email'],
+  successRedirect: '/auth/profile',
   failureRedirect: '/auth/google'
 }))
 
-router.get('/google/profile', function (req, res) {
+router.get('/twitter', passport.authenticate('twitter', { scope: ['include_email=true'] }))
+router.get('/twitter/callback', passport.authenticate('twitter', {
+  successRedirect: '/auth/profile',
+  failureRedirect: '/auth/twitter'
+}))
+
+router.get('/facebook', passport.authenticate('facebook', { scope: "email" }))
+router.get('/facebook/callback', passport.authenticate('facebook', {
+  successRedirect: '/auth/profile',
+  failureRedirect: '/auth/facebook'
+}))
+
+router.get('/profile', function (req, res) {
   executor.execute(req, res, function (sender) {
     sender(new Promise((resolve) => { resolve(req.user) }), 'result')
   })

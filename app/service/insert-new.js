@@ -169,6 +169,10 @@ module.exports.execute = function (options) {
       }
       return conn.query(SQL_INSERT_NEW, parameters)
         .then(function (results) {
+          results.firstId = results.insertId
+          results.numberValid = results.affectedRows
+          var fieldToRemove = ['fieldCount', 'affectedRows', 'insertId', 'serverStatus', 'warningCount', 'message', 'protocol41', 'changedRows']
+          _.each(fieldToRemove, function (f) { delete results[f] })
           if (errors) results.errors = errors
           return results
         })
