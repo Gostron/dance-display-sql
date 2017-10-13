@@ -13,10 +13,10 @@ Roles that interact with the model are defined to be :
 
 Every level has his own actions (clearances) in addition with the layers under it
 
-            -Top Admin-
-        -----Organizer-----
-    ---Contestant-Judge-Help---
- -------------Visitor-------------
+                  -Top Admin-
+              -----Organizer-----
+          ---Contestant-Judge-Help---
+      -------------Visitor-------------
 
 ## Actions per role
 
