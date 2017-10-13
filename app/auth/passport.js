@@ -32,7 +32,6 @@ module.exports = function (passport) {
 
   // used to serialize the user for the session
   passport.serializeUser(function(user, done) {
-    console.log({ logFrom: 'serializeUser', log: user })
     var propertyToSerialize = {
       'google': 'googleId',
       'twitter': 'twitterId',
@@ -122,8 +121,6 @@ module.exports = function (passport) {
     },
     function(req, accessToken, refreshToken, profile, done) {
 
-      console.log(req.user)
-
       var user = {
         provider: 'twitter',
         twitterId: profile.id,
@@ -172,8 +169,6 @@ module.exports = function (passport) {
       passReqToCallback : true
     },
     function(req, token, refreshToken, profile, done) {
-
-      console.log(req.user)
 
       var user = {
         provider: 'google',

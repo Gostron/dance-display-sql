@@ -38,18 +38,6 @@ const logger = require('app/logger').getLogger('dds.service')
 
 
 /**
- * List of authentications
- * @type {object}
- */
-const SQL_USER_MANAGEMENT_AUTH_TABLES = {
-  'google': 'user_google',
-  'twitter': 'user_twitter',
-  'facebook': 'user_facebook',
-  'sql': 'user'
-}
-
-
-/**
  * List of authenticators keys (actual json propeties returned by them)
  * @type {object}
  */
@@ -69,6 +57,17 @@ const SQL_USER_MANAGEMENT_USER_KEYS = {
   'google': 'id_google',
   'twitter': 'id_twitter',
   'facebook': 'id_facebook'
+}
+
+
+/**
+ * Authenticators tables
+ * @type {object}
+ */
+const SQL_USER_MANAGEMENT_SET_AUTH_TABLES = {
+  'google': 'user_google',
+  'twitter': 'user_twitter',
+  'facebook': 'user_facebook'
 }
 
 
@@ -98,6 +97,35 @@ const SQL_USER_MANAGEMENT_GET = [
   'WHERE {{key}} = {id}',
   'LIMIT 1'
 ].join('\n')
+
+
+/**
+ * Query statement for retrieving an authenticator token
+ * @type {object}
+ */
+const SQL_USER_MANAGEMENT_GET_AUTH_TOKEN = "SELECT * FROM {{authTable}} WHERE {{authKey}} = {authKeyValue}"
+
+/**
+ * Query statement for updating an authenticator token
+ * @type {object}
+ */
+const SQL_USER_MANAGEMENT_UPDATE_AUTH_TOKEN = "UDPATE {{authTable}} SET {values} WHERE {{authKey}} = {authKeyValue}"
+/**
+ * Query statement for creating an authenticator token
+ * @type {object}
+ */
+const SQL_USER_MANAGEMENT_NEW_AUTH_TOKEN = "INSERT INTO {{authTable}} SET {values}"
+
+/**
+ * Query statement for updating an existing user
+ * @type {object}
+ */
+const SQL_USER_MANAGEMENT_UPDATE_USER = "UPDATE user SET {{authLookupCol}} = (SELECT id FROM {{authTable}} WHERE {{authKey}} = {authKeyValue})"
+/**
+ * Query statement for creating a new user
+ * @type {object}
+ */
+const SQL_USER_MANAGEMENT_NEW_USER = "INSERT INTO user SET {{authLookupCol}} = (SELECT id FROM {{authTable}} WHERE {{authKey}} = {authKeyValue})"
 
 
 /**
@@ -132,17 +160,6 @@ module.exports.getUser = getUser
 
 
 /**
- * Authenticators tables
- * @type {object}
- */
-const SQL_USER_MANAGEMENT_SET_AUTH_TABLES = {
-  'google': 'user_google',
-  'twitter': 'user_twitter',
-  'facebook': 'user_facebook'
-}
-
-
-/**
  *
  * @param {UserManagementSetOptions} options
  * @return {promise} the promise callback with the result of the query as parameter.
@@ -164,23 +181,6 @@ module.exports.addUser = function (options) {
   var authToWrite = Object.assign({}, options.properties)
   delete authToWrite.provider
 
-  /** When adding a new user we must
-   *  - Check if the authenticator ID is known
-   *    - If it is, update the auth token and..
-   *    - It if isn't, create it and...
-   *  - Check if user is connected
-   *    - If he is, update the user with the auth ID
-   *    - If he isn't, create the user with the auth ID
-   *  - Return the getUser result
-   */
-  const SQL_USER_MANAGEMENT_GET_AUTH_TOKEN = "SELECT * FROM {{authTable}} WHERE {{authKey}} = {authKeyValue}"
-
-  const SQL_USER_MANAGEMENT_UPDATE_AUTH_TOKEN = "UDPATE {{authTable}} SET {values} WHERE {{authKey}} = {authKeyValue}"
-  const SQL_USER_MANAGEMENT_NEW_AUTH_TOKEN = "INSERT INTO {{authTable}} SET {values}"
-
-  const SQL_USER_MANAGEMENT_UPDATE_USER = "UPDATE user SET {{authLookupCol}} = (SELECT id FROM {{authTable}} WHERE {{authKey}} = {authKeyValue})"
-  const SQL_USER_MANAGEMENT_NEW_USER = "INSERT INTO user SET {{authLookupCol}} = (SELECT id FROM {{authTable}} WHERE {{authKey}} = {authKeyValue})"
-
   return db.getConnection()
     .then(function (conn) {
       // First get the auth token
@@ -192,7 +192,6 @@ module.exports.addUser = function (options) {
         .then(function (result) {
           // Then, if user is connected, update it with the token, else create a user
           const queryToUse = options.currentUser ? SQL_USER_MANAGEMENT_UPDATE_USER : SQL_USER_MANAGEMENT_NEW_USER
-          // console.log({ logFrom: 'addUser', mode: options.currentUser ? 'update' : 'add', context: options, result: result })
           return conn.query(queryToUse, Object.assign({}, context))
           .then(function (result) {
             // Return the user
