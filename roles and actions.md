@@ -49,6 +49,7 @@ Create competitions and manage them :
 
 Action | API Calls
 ------ | ---------
-Grant permission | /api/competition/:id/grant/:userId/:permissionType
-/api/user/:userId/grant/:permissionType
-Create object | /api/contestant/new (**_POST_**)
+Grant permission | /api/competition/**:id**/grant/**:userId**/**:permissionType**--
+/api/user/**:userId**/grant/**:permissionType**
+Create object | /api/contestant/new (**_POST_**)--
+/api/couple/new (**_POST_**)
