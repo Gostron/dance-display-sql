@@ -47,9 +47,26 @@ Create competitions and manage them :
 
 ## API Calls per action
 
-Action | API Calls
------- | ---------
-Grant permission | /api/competition/_:id_/grant/_:userId_/_:permissionType_<br>/api/user/_:userId_/grant/_:permissionType_
-Create object | /api/age/new (__POST__)<br>/api/category/_:id_/stage/new (__POST__)<br>/api/competition/new (__POST__)<br>/api/competition/_:id_/category/new (__POST__)<br>/api/competition/_:id_/event/new (__POST__)<br>/api/contestant/new (__POST__)<br>/api/couple/new (__POST__)<br>/api/dance/new (__POST__)<br>/api/judge/new (__POST__)<br>/api/mark/new (__POST__)<br>/api/stage/new (__POST__)<br>/api/subtemplate/new (__POST__)<br>/api/template/new (__POST__)
-Update or<br>delete object | /api/age/_:id_ (__POST__ & __DELETE__)<br>/api/category/_:id_ (__POST__ & __DELETE__)<br>/api/competition/_:id_ (__POST__ & __DELETE__)<br>__/api/competition/_:id_/progress__ (__POST__)<br>/api/contestant/_:id_ (__POST__ & __DELETE__)<br>/api/couple/_:id_ (__POST__ & __DELETE__)<br>/api/dance/_:id_ (__POST__ & __DELETE__)<br>/api/event/_:id_ (__POST__ & __DELETE__)<br>/api/judge/_:id_ (__POST__ & __DELETE__)<br>/api/mark/_:id_ (__POST__ & __DELETE__)<br>/api/stage/_:id_ (__POST__ & __DELETE__)<br>/api/subtemplate/_:id_ (__POST__ & __DELETE__)<br>/api/template/_:id_ (__POST__ & __DELETE__)
-Associate objects,<br>update association (if it exists)<br> or delete association | /api/category/_:id_/couple/_:id_ (__POST__ & __DELETE__)<br>/api/category/_:id_/judge/_:id_ (__POST__ & __DELETE__)<br>/api/category/_:id_/stage/_:id_ (__POST__ & __DELETE__)<br>/api/competition/_:id_/couple/_:id_ (__POST__ & __DELETE__)
+### Permissions types
+
+Permissions are enumerators with the following values:
+- Competition permissions
+  - __C_PROGRESS__ : Changing progress
+  - __C_MANAGEMENT__ : Creating objects
+  - __C_JUDGE__ : Creating marks
+  - __C_ADMIN__ : Assigning judges
+  - __C_REFEREE__ : Consulting marks
+- Global permissions
+  - __ADMIN__ : Admininstrator (no restrictions)
+  - __HOST__ : Creating competitions, managing and granting permissions to competitions created by you.
+
+Action | Category | API Call | Permission Required
+------ | -------- | -------- | -------------------
+Grant in a competition scope        | Permissions                 | /api/competition/_:id_/grant/_:userId_/_:CompetitionPermissionType_   | __HOST__
+Revoke in a competition scope       | Permissions                 | /api/competition/_:id_/revoke/_:userId_/_:CompetitionPermissionType_  | __HOST__
+Grant globally                      | Permissions                 | /api/grant/_:userId_/_:permissionType_                                | __ADMIN__
+Revoke globally                     | Permissions                 | /api/revoke/_:userId_/_:permissionType_                               | __ADMIN__
+Create a new global object          | Global object CRUD          | /api/`object`/new (__POST__)<br>/api/`object`/_:id_ (__GET__, __POST__ & __DELETE__)<br>Objects are : age, contestant, couple, dance, judge, stage, template, subtemplate | __ADMIN__
+Create a new competition object     | Competition object CRUD     | /api/competition/_:id_/`object`/new (__POST__)<br>/api/`object`/_:id_ (__GET__, __POST__ & __DELETE__)<br>Objects are : category, event, progress (can only be updated), couple | __C_MANAGEMENT__ or __C_PROGRESS__ for progress
+Create a new category object        | Category object CRUD        | /api/category/_:id_/`object`/new (__POST__)<br>/api/`object`/_:id_ (__GET__, __POST__ & __DELETE__)<br>Objects are : stage, couple, judge | __C_MANAGEMENT__ and __C_ADMIN__ for judge C~~R~~UD
+Create a new mark                   | Mark CRUD                   | /api/category/_:id_/stage/_:id_/`mark`/new (__POST__)<br>/category/_:id_/stage/_:id_/`mark`/_:id_ (__GET__, __POST__ & __DELETE__) | __C_JUDGE__ for CRUD and __C_REFEREE__ for reading
