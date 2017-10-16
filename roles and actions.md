@@ -64,19 +64,19 @@ Anonymous permissions grant reading on all objects but marks, which require __C_
 
 ### Calls
 
- Action              | Category |                             API Call                                            | Permission Required
--------------------- | :------: | ------------------------------------------------------------------------------- | -------------------
-Object (global)      |   CRUD   | `/object`                      <br>`/new` (POST) or `/:id` (GET, POST & DELETE)<br>where `object` is age, contestant, couple, dance, judge, stage, template or subtemplate | **ADMIN**
-Progress             |   CRUD   | `/competition/:id/progress` (POST)                                              | **C_PROGRESS**
-Object (competition) |   CRUD   | `/competition/:id/object`      <br>`/new` (POST) or `/:id` (GET, POST & DELETE)<br>where `object` is category, event ou couple | **C_MANAGEMENT**
-Judge (competition)  |   CRUD   | `/competition/:id/judge`       <br>`/new` (POST) or `/:id` (GET, POST & DELETE) | **C_ADMIN**
-Object (category)    |   CRUD   | `/category/:id/object`         <br>`/new` (POST) or `/:id` (GET, POST & DELETE)<br>where `object` is stage ou couple | **C_MANAGEMENT**
-Judge (category)     |   CRUD   | `/category/:id/stage/:id/judge`<br>`/new` (POST) or `/:id` (GET, POST & DELETE) | **C_ADMIN**
-Mark                 |   CRUD   | `/category/:id/stage/:id/mark` <br>`/new` (POST) or `/:id` (GET, POST & DELETE) | **C_REFEREE** (reading),<br>**C_JUDGE** (CRUD)
-Grant (globally)     |   ACL    | `/grant/:userId/:GlobalACL`                                                     | **ADMIN**
-Revoke (globally)    |   ACL    | `/revoke/:userId/:GlobalACL`                                                    | **ADMIN**
-Grant (competition)  |   ACL    | `/competition/:id/grant/:userId/:CompetitionACL`                                | **HOST**
-Revoke (competition) |   ACL    | `/competition/:id/revoke/:userId/:CompetitionACL`                               | **HOST**
+ Action              |                             API Call                                            | Permission Required
+-------------------- | ------------------------------------------------------------------------------- | -------------------
+Object (global)      | `/object`                      <br>`/new` (POST) or `/:id` (GET, POST & DELETE)<br>where `object` is age, contestant, couple, dance, judge, stage, template or subtemplate | **ADMIN**
+Progress             | `/competition/:id/progress` (POST)                                              | **C_PROGRESS**
+Object (competition) | `/competition/:id/object`      <br>`/new` (POST) or `/:id` (GET, POST & DELETE)<br>where `object` is category, event ou couple | **C_MANAGEMENT**
+Judge (competition)  | `/competition/:id/judge`       <br>`/new` (POST) or `/:id` (GET, POST & DELETE) | **C_ADMIN**
+Object (category)    | `/category/:id/object`         <br>`/new` (POST) or `/:id` (GET, POST & DELETE)<br>where `object` is stage ou couple | **C_MANAGEMENT**
+Judge (category)     | `/category/:id/stage/:id/judge`<br>`/new` (POST) or `/:id` (GET, POST & DELETE) | **C_ADMIN**
+Mark                 | `/category/:id/stage/:id/mark` <br>`/new` (POST) or `/:id` (GET, POST & DELETE) | **C_REFEREE** (reading),<br>**C_JUDGE** (CRUD)
+Grant (globally)     | `/grant/:userId/:GlobalACL`                                                     | **ADMIN**
+Revoke (globally)    | `/revoke/:userId/:GlobalACL`                                                    | **ADMIN**
+Grant (competition)  | `/competition/:id/grant/:userId/:CompetitionACL`                                | **HOST**
+Revoke (competition) | `/competition/:id/revoke/:userId/:CompetitionACL`                               | **HOST**
 
 ### Objects associations
 
