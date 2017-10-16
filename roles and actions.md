@@ -74,7 +74,7 @@ Permissions are enumerators with the following values:
   - __C_ADMIN__ : Assigning judges
   - __C_REFEREE__ : Consulting marks
 - *GlobalACL*
-  - __ADMIN__ : Admininstrator (no restrictions)
+  - __ADMIN__ : Administrator (no restriction)
   - __HOST__ : Creating competitions, managing and granting permissions to competitions created by you.
 
 Anonymous permissions grant reading on all objects but marks, which require __C_REFEREE__ permissions.
