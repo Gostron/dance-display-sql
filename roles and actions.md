@@ -82,11 +82,11 @@ Anonymous permissions grant reading on all objects but marks, which require __C_
 ### Objects associations
 
 Some objects can be created globally and in the context of a competition (in the competition directly, and/or in a category, and/or in a stage).
-This means that the object must be created globally (i.e. a couple), and then associated with a competition (i.e. the couple has subscribed to the event, has a competition number), and then associated with a round (i.e our couple will dance in the third category up to the semi-finals). This allows for no duplication of data and a simplified user management (the same couple will have the same credentials, and will be recognized across competitions)
+This means that the object must be created globally (i.e. a couple), and then associated with a competition (i.e. the couple has subscribed to the event, has a competition number), and then associated with a round (i.e our couple will dance in the third category up to the semi-finals). This allows for no duplication of data and a simplified user management (the same couple will have the same credentials, and will be recognized across competitions).
 
 ### Extended mode
 
 The extended mode is activated through the addition of the URL parameter `extended=true` and is available on most **GET** API calls, where applicable.
-What it does is that the returned value will include the references to the object requested.
-For example, is you request a certain competition, the standard call (non-extended) will return the object in its simple form : date_begin, date_end, name and subname.
-If you request it with the extended mode (`/competition/4?extended=true`), you will get the (most) complete version of the object : previous properties + progress + a list of categories, events, judges, couples. The categorie won't, however, be extended, which means they will not show their own stages or couples ; nor will other objects either.
+What it does is that it returns the value with all of the references to the object.
+For example, if you request a certain competition, the standard call (non-extended) will return the object in its simple form : date_begin, date_end, name and subname.
+If you request it with the extended mode (`/competition/4?extended=true`), you will get the (most) complete version of the object : previous properties + progress + a list of categories, events, judges, couples that have been associated with the competition. The categories returned, however, won't be extended, which means they will not show their own stages or couples. The other references will not be extended either.
