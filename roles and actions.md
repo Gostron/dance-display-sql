@@ -62,16 +62,16 @@ Permissions are enumerators with the following values:
 
 Anonymous permissions grant reading on all objects but marks, which require __C_REFEREE__ permissions.
 
- Action                 |  Category   |                             API Call                                  | Permission Required
------------------------ | ----------- | --------------------------------------------------------------------- | -------------------
-Grant globally          | Permissions | /grant/`userId`/_GlobalPermissionType_                                | __ADMIN__
-Revoke globally         | Permissions | /revoke/`userId`/_GlobalPermissionType_                               | __ADMIN__
-Grant in a competition  | Permissions | /competition/`id`/grant/`userId`/_CompetitionPermissionType_          | __HOST__
-Revoke in a competition | Permissions | /competition/`id`/revoke/`userId`/_CompetitionPermissionType_         | __HOST__
-Global object CRUD      | Object CRUD | /`object`/new (__POST__)<br>/`object`/`id` (__GET__, __POST__ & __DELETE__)<br>where `object` is age, contestant, couple, dance, judge, stage, template or subtemplate | __ADMIN__
-Competition object CRUD | Object CRUD | /competition/`id`/`object`/new (__POST__)<br>/`object`/`id` (__GET__, __POST__ & __DELETE__)<br>where `object` is category, event ou couple | __C_MANAGEMENT__
-Judge competition CRUD  | Object CRUD | /competition/`id`/`judge`/new (__POST__)<br>/`judge`/`id` (__GET__, __POST__ & __DELETE__) | __C_ADMIN__ for judge C~~R~~UD
-Category object CRUD    | Object CRUD | /category/`id`/`object`/new (__POST__)<br>/`object`/`id` (__GET__, __POST__ & __DELETE__)<br>where `object` is stage ou couple | __C_MANAGEMENT__
-Judge category CRUD     | Object CRUD | /category/`id`/stage/`id`/judge/new (__POST__)<br>/category/`id`/stage/`id`/judge/`id` (__GET__, __POST__ & __DELETE__) | __C_ADMIN__ for judge C~~R~~UD
-Mark CRUD               | Object CRUD | /category/`id`/stage/`id`/mark/new (__POST__)<br>/category/`id`/stage/`id`/mark/`id` (__GET__, __POST__ & __DELETE__) | __C_JUDGE__ for CRUD and __C_REFEREE__ for reading
+ Action                 |  Category   |                             API Call                          | Permission Required
+----------------------- | ----------- | ------------------------------------------------------------- | -------------------
+Grant globally          | Permissions | /grant/`userId`/_GlobalPermissionType_                        | __ADMIN__
+Revoke globally         | Permissions | /revoke/`userId`/_GlobalPermissionType_                       | __ADMIN__
+Grant in a competition  | Permissions | /competition/`id`/grant/`userId`/_CompetitionPermissionType_  | __HOST__
+Revoke in a competition | Permissions | /competition/`id`/revoke/`userId`/_CompetitionPermissionType_ | __HOST__
+Global object CRUD      | Object CRUD | /`object` : /new (__POST__) or /`id` (__GET__, __POST__ & __DELETE__)<br>where `object` is age, contestant, couple, dance, judge, stage, template or subtemplate | __ADMIN__
+Competition object CRUD | Object CRUD | /competition/`id`/`object` : /new (__POST__) or /`id` (__GET__, __POST__ & __DELETE__)<br>where `object` is category, event ou couple | __C_MANAGEMENT__
+Judge competition CRUD  | Object CRUD | /competition/`id`/`judge` : /new (__POST__) or /`id` (__GET__, __POST__ & __DELETE__) | __C_ADMIN__ for judge CRUD
+Category object CRUD    | Object CRUD | /category/`id`/`object` : /new (__POST__) or /`id` (__GET__, __POST__ & __DELETE__)<br>where `object` is stage ou couple | __C_MANAGEMENT__
+Judge category CRUD     | Object CRUD | /category/`id`/stage/`id`/judge : /new (__POST__) or /`id` (__GET__, __POST__ & __DELETE__) | __C_ADMIN__
+Mark CRUD               | Object CRUD | /category/`id`/stage/`id`/mark : /new (__POST__) or /`id` (__GET__, __POST__ & __DELETE__) | __C_REFEREE__ for reading,<br>__C_JUDGE__ for CRUD
 Progress CRUD           | Object CRUD | /competition/`id`/progress (__POST__) | __C_PROGRESS__
