@@ -47,6 +47,23 @@ Create competitions and manage them :
 
 ## API Calls per action
 
+### Calls
+
+ Action              |                             API Call                                            | Permission Required
+-------------------- | ------------------------------------------------------------------------------- | -------------------
+Object (global)      | `/object`                      <br>`/new` (POST) or `/:id` (GET, POST & DELETE)<br>where `object` is age, contestant, couple, dance, judge, stage, template or subtemplate | **ADMIN**
+Object (global)      | `/competition`                 <br>`/new` (POST) or `/:id` (GET, POST & DELETE) | **HOST**
+Object (competition) | `/competition/:id/object`      <br>`/new` (POST) or `/:id` (GET, POST & DELETE)<br>where `object` is category, event or couple | **C_MANAGEMENT**
+Judge (competition)  | `/competition/:id/judge`       <br>`/new` (POST) or `/:id` (GET, POST & DELETE) | **C_ADMIN**
+Progress             | `/competition/:id/progress` (POST)                                              | **C_PROGRESS**
+Object (category)    | `/category/:id/object`         <br>`/new` (POST) or `/:id` (GET, POST & DELETE)<br>where `object` is stage or couple | **C_MANAGEMENT**
+Judge (category)     | `/category/:id/stage/:id/judge`<br>`/new` (POST) or `/:id` (GET, POST & DELETE) | **C_ADMIN**
+Mark                 | `/category/:id/stage/:id/mark` <br>`/new` (POST) or `/:id` (GET, POST & DELETE) | **C_REFEREE** (reading),<br>**C_JUDGE** (CRUD)
+Grant (globally)     | `/grant/:userId/:GlobalACL`                                                     | **ADMIN**
+Revoke (globally)    | `/revoke/:userId/:GlobalACL`                                                    | **ADMIN**
+Grant (competition)  | `/competition/:id/grant/:userId/:CompetitionACL`                                | **HOST**
+Revoke (competition) | `/competition/:id/revoke/:userId/:CompetitionACL`                               | **HOST**
+
 ### Permissions types
 
 Permissions are enumerators with the following values:
@@ -62,22 +79,14 @@ Permissions are enumerators with the following values:
 
 Anonymous permissions grant reading on all objects but marks, which require __C_REFEREE__ permissions.
 
-### Calls
-
- Action              |                             API Call                                            | Permission Required
--------------------- | ------------------------------------------------------------------------------- | -------------------
-Object (global)      | `/object`                      <br>`/new` (POST) or `/:id` (GET, POST & DELETE)<br>where `object` is age, contestant, couple, dance, judge, stage, template or subtemplate | **ADMIN**
-Progress             | `/competition/:id/progress` (POST)                                              | **C_PROGRESS**
-Object (competition) | `/competition/:id/object`      <br>`/new` (POST) or `/:id` (GET, POST & DELETE)<br>where `object` is category, event ou couple | **C_MANAGEMENT**
-Judge (competition)  | `/competition/:id/judge`       <br>`/new` (POST) or `/:id` (GET, POST & DELETE) | **C_ADMIN**
-Object (category)    | `/category/:id/object`         <br>`/new` (POST) or `/:id` (GET, POST & DELETE)<br>where `object` is stage ou couple | **C_MANAGEMENT**
-Judge (category)     | `/category/:id/stage/:id/judge`<br>`/new` (POST) or `/:id` (GET, POST & DELETE) | **C_ADMIN**
-Mark                 | `/category/:id/stage/:id/mark` <br>`/new` (POST) or `/:id` (GET, POST & DELETE) | **C_REFEREE** (reading),<br>**C_JUDGE** (CRUD)
-Grant (globally)     | `/grant/:userId/:GlobalACL`                                                     | **ADMIN**
-Revoke (globally)    | `/revoke/:userId/:GlobalACL`                                                    | **ADMIN**
-Grant (competition)  | `/competition/:id/grant/:userId/:CompetitionACL`                                | **HOST**
-Revoke (competition) | `/competition/:id/revoke/:userId/:CompetitionACL`                               | **HOST**
-
 ### Objects associations
 
-Some global objects can be created globally and in the context of a competition (in the competition directly, and/or in a category, and/or in a stage). This simply means that the object must be created globally (i.e. )
+Some objects can be created globally and in the context of a competition (in the competition directly, and/or in a category, and/or in a stage).
+This means that the object must be created globally (i.e. a couple), and then associated with a competition (i.e. the couple has subscribed to the event, has a competition number), and then associated with a round (i.e our couple will dance in the third category up to the semi-finals). This allows for no duplication of data and a simplified user management (the same couple will have the same credentials, and will be recognized across competitions)
+
+### Extended mode
+
+The extended mode is activated through the addition of the URL parameter `extended=true` and is available on most **GET** API calls, where applicable.
+What it does is that the returned value will include the references to the object requested.
+For example, is you request a certain competition, the standard call (non-extended) will return the object in its simple form : date_begin, date_end, name and subname.
+If you request it with the extended mode (`/competition/4?extended=true`), you will get the (most) complete version of the object : previous properties + progress + a list of categories, events, judges, couples. The categorie won't, however, be extended, which means they will not show their own stages or couples ; nor will other objects either.
