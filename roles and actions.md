@@ -50,13 +50,13 @@ Create competitions and manage them :
 ### Permissions types
 
 Permissions are enumerators with the following values:
-- Competition permissions
+- _CompetitionPermissionType_
   - __C_PROGRESS__ : Changing progress
   - __C_MANAGEMENT__ : Creating objects
   - __C_JUDGE__ : Creating marks
   - __C_ADMIN__ : Assigning judges
   - __C_REFEREE__ : Consulting marks
-- Global permissions
+- _GlobalPermissionType_
   - __ADMIN__ : Admininstrator (no restrictions)
   - __HOST__ : Creating competitions, managing and granting permissions to competitions created by you.
 
@@ -64,13 +64,14 @@ Anonymous permissions grant reading on all objects but marks, which require __C_
 
  Action                 |  Category   |                             API Call                                  | Permission Required
 ----------------------- | ----------- | --------------------------------------------------------------------- | -------------------
-Grant in a competition  | Permissions | /competition/`id`/grant/`userId`/_CompetitionPermissionType_   | __HOST__
-Revoke in a competition | Permissions | /competition/`id`/revoke/`userId`/_CompetitionPermissionType_  | __HOST__
-Grant globally          | Permissions | /grant/`userId`/_GlobalPermissionType_                          | __ADMIN__
-Revoke globally         | Permissions | /revoke/`userId`/_GlobalPermissionType_                         | __ADMIN__
+Grant globally          | Permissions | /grant/`userId`/_GlobalPermissionType_                                | __ADMIN__
+Revoke globally         | Permissions | /revoke/`userId`/_GlobalPermissionType_                               | __ADMIN__
+Grant in a competition  | Permissions | /competition/`id`/grant/`userId`/_CompetitionPermissionType_          | __HOST__
+Revoke in a competition | Permissions | /competition/`id`/revoke/`userId`/_CompetitionPermissionType_         | __HOST__
 Global object CRUD      | Object CRUD | /`object`/new (__POST__)<br>/`object`/`id` (__GET__, __POST__ & __DELETE__)<br>where `object` is age, contestant, couple, dance, judge, stage, template or subtemplate | __ADMIN__
-Competition object CRUD | Object CRUD | /api/competition/`id`/`object`/new (__POST__)<br>/api/`object`/`id` (__GET__, __POST__ & __DELETE__)<br>where `object` is category, event, couple or judge | __C_MANAGEMENT__ and __C_ADMIN__ for judge C~~R~~UD
-Category object CRUD    | Object CRUD | /api/category/`id`/`object`/new (__POST__)<br>/api/`object`/`id` (__GET__, __POST__ & __DELETE__)<br>where `object` is stage, couple or judge | __C_MANAGEMENT__ and __C_ADMIN__ for judge C~~R~~UD
-Judges CRUD             | Object CRUD | /api/category/`id`/stage/`id`/judge/new (__POST__)<br>/api/category/`id`/stage/`id`/judge/`id` (__GET__, __POST__ & __DELETE__)<br>where `object` is stage, couple or judge | __C_MANAGEMENT__ and __C_ADMIN__ for judge C~~R~~UD
-Mark CRUD               | Object CRUD | /api/category/`id`/stage/`id`/mark/new (__POST__)<br>/api/category/`id`/stage/`id`/mark/`id` (__GET__, __POST__ & __DELETE__) | __C_JUDGE__ for CRUD and __C_REFEREE__ for reading
-Progress CRUD           | Object CRUD | /api/competition/`id`/progress (__POST__) | __C_PROGRESS__
+Competition object CRUD | Object CRUD | /competition/`id`/`object`/new (__POST__)<br>/`object`/`id` (__GET__, __POST__ & __DELETE__)<br>where `object` is category, event ou couple | __C_MANAGEMENT__
+Judge competition CRUD  | Object CRUD | /competition/`id`/`judge`/new (__POST__)<br>/`judge`/`id` (__GET__, __POST__ & __DELETE__) | __C_ADMIN__ for judge C~~R~~UD
+Category object CRUD    | Object CRUD | /category/`id`/`object`/new (__POST__)<br>/`object`/`id` (__GET__, __POST__ & __DELETE__)<br>where `object` is stage ou couple | __C_MANAGEMENT__
+Judge category CRUD     | Object CRUD | /category/`id`/stage/`id`/judge/new (__POST__)<br>/category/`id`/stage/`id`/judge/`id` (__GET__, __POST__ & __DELETE__) | __C_ADMIN__ for judge C~~R~~UD
+Mark CRUD               | Object CRUD | /category/`id`/stage/`id`/mark/new (__POST__)<br>/category/`id`/stage/`id`/mark/`id` (__GET__, __POST__ & __DELETE__) | __C_JUDGE__ for CRUD and __C_REFEREE__ for reading
+Progress CRUD           | Object CRUD | /competition/`id`/progress (__POST__) | __C_PROGRESS__
