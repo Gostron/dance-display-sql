@@ -62,16 +62,22 @@ Permissions are enumerators with the following values:
 
 Anonymous permissions grant reading on all objects but marks, which require __C_REFEREE__ permissions.
 
- Action                  |  Category   |                             API Call                                         | Permission Required
------------------------- | :---------: | ---------------------------------------------------------------------------- | -------------------
-Grant globally           | Permissions | `/grant/userId/*GlobalACL*`                                                  | __ADMIN__
-Revoke globally          | Permissions | `/revoke/userId/*GlobalACL*`                                                 | __ADMIN__
-Grant for a competition  | Permissions | `/competition/id/grant/userId/*CompetitionACL*`                              | __HOST__
-Revoke for a competition | Permissions | `/competition/id/revoke/userId/*CompetitionACL*`                             | __HOST__
-Global object CRUD       |    CRUD     | `/object`                    <br>`/new` (POST) or `/id` (GET, POST & DELETE)<br>where `object` is age, contestant, couple, dance, judge, stage, template or subtemplate | __ADMIN__
-Competition object CRUD  |    CRUD     | `/competition/id/object`     <br>`/new` (POST) or `/id` (GET, POST & DELETE)<br>where `object` is category, event ou couple | __C_MANAGEMENT__
-Judge competition CRUD   |    CRUD     | `/competition/id/judge`      <br>`/new` (POST) or `/id` (GET, POST & DELETE) | __C_ADMIN__
-Category object CRUD     |    CRUD     | `/category/id/object`        <br>`/new` (POST) or `/id` (GET, POST & DELETE)<br>where `object` is stage ou couple | __C_MANAGEMENT__
-Judge category CRUD      |    CRUD     | `/category/id/stage/id/judge`<br>`/new` (POST) or `/id` (GET, POST & DELETE) | __C_ADMIN__
-Mark CRUD                |    CRUD     | `/category/id/stage/id/mark` <br>`/new` (POST) or `/id` (GET, POST & DELETE) | __C_REFEREE__ for reading,<br>__C_JUDGE__ for CRUD
-Progress CRUD            |    CRUD     | `/competition/id/progress` (POST)                                            | __C_PROGRESS__
+### Calls
+
+ Action                  |  Category   |                             API Call                                            | Permission Required
+------------------------ | :---------: | ------------------------------------------------------------------------------- | -------------------
+Grant globally           | Permissions | `/grant/:userId/:GlobalACL`                                                     | **ADMIN**
+Revoke globally          | Permissions | `/revoke/:userId/:GlobalACL`                                                    | **ADMIN**
+Grant for a competition  | Permissions | `/competition/:id/grant/:userId/:CompetitionACL`                                | **HOST**
+Revoke for a competition | Permissions | `/competition/:id/revoke/:userId/:CompetitionACL`                               | **HOST**
+Global object CRUD       |    CRUD     | `/object`                      <br>`/new` (POST) or `/:id` (GET, POST & DELETE)<br>where `object` is age, contestant, couple, dance, judge, stage, template or subtemplate | **ADMIN**
+Competition object CRUD  |    CRUD     | `/competition/:id/object`      <br>`/new` (POST) or `/:id` (GET, POST & DELETE)<br>where `object` is category, event ou couple | **C_MANAGEMENT**
+Judge competition CRUD   |    CRUD     | `/competition/:id/judge`       <br>`/new` (POST) or `/:id` (GET, POST & DELETE) | **C_ADMIN**
+Category object CRUD     |    CRUD     | `/category/:id/object`         <br>`/new` (POST) or `/:id` (GET, POST & DELETE)<br>where `object` is stage ou couple | **C_MANAGEMENT**
+Judge category CRUD      |    CRUD     | `/category/:id/stage/:id/judge`<br>`/new` (POST) or `/:id` (GET, POST & DELETE) | **C_ADMIN**
+Mark CRUD                |    CRUD     | `/category/:id/stage/:id/mark` <br>`/new` (POST) or `/:id` (GET, POST & DELETE) | **C_REFEREE** (reading),<br>**C_JUDGE* (CRUD)
+Progress CRUD            |    CRUD     | `/competition/:id/progress` (POST)                                              | **C_PROGRESS**
+
+### Objects associations
+
+Some global objects can be created globally and in the context of a competition (in the competition directly, and/or in a category, and/or in a stage). This simply means that the object must be created globally (i.e. )
