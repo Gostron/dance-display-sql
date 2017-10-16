@@ -62,7 +62,7 @@ Permissions are enumerators with the following values:
 
 Anonymous permissions grant reading on all objects but marks, which require __C_REFEREE__ permissions.
 
-         Action         |  Category   |                             API Call                                  | Permission Required
+ Action                 |  Category   |                             API Call                                  | Permission Required
 ----------------------- | ----------- | --------------------------------------------------------------------- | -------------------
 Grant in a competition  | Permissions | /api/competition/_:id_/grant/_:userId_/_:CompetitionPermissionType_   | __HOST__
 Revoke in a competition | Permissions | /api/competition/_:id_/revoke/_:userId_/_:CompetitionPermissionType_  | __HOST__
