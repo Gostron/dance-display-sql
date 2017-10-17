@@ -2,7 +2,7 @@
   "name": "Dance display API",
   "title": "Dance display API",
   "version": "0.0.1",
-  "description": "API to be used with any client trying to leverage information concerning the competitions",
+  "description": "API used by every client (presentation, consultation, subscription, notation, organization, etc), Web or application (Android, iOS)",
   "url" : "http://localhost:3000",
   "template": {
     "forceLanguage": "en"

@@ -23,175 +23,52 @@ const insertNew     = require('app/service/insert-new')
 const selectById    = require('app/service/select-by-id')
 const selectAll     = require('app/service/select-all')
 
-//
-// Router: /api
-//
 const router = express.Router({
   caseSensitive: true,
   mergeParams: true,
   strict: true
 })
 
-//
-// Endpoints...
-//
+/**
+ * @apiDefine OBJECT
+ * @apiParam {String=age, category, competition, contestant, couple, dance, event, judge, stage, template, subtemplate} object **URL** - the object type.
+ */
 
 /**
- * @api {get} /api/:object/get/:id Get Item By id
- * @apiName GetItemById
- * @apiGroup API
- * @apiDescription Returns the requested object, selected by its id
- * @apiParam {String} [object] the type of the object.
- * @apiParam {Integer} [id] the id of the object
- * @apiParam {Boolean} [extended] Sets the mode (extended or simple) for the query
- * @apiParam {Array} [fields] the fields to be returned
- * @apiVersion 0.0.1
- * @apiExample {curl} Example usage:
- *     curl -i http://localhost:3000/api/contestant/get/23
- *     curl -i http://localhost:3000/api/mark/get/514?fields=notation,id
- *
- * @apiSuccess {Object} result the object request
- *
- * @apiSuccessExample {json} Success response
- *     {
- *       "result": {
- *         id: 23,
- *         firstname: 'John',
- *         lastname: 'Doe',
- *         birthdate: '1900-01-01 00:00:01'
- *       }
- *     }
+ * @apiDefine Objects Object Manipulation
+ * The calls in this category allow users CRUD methods
+ * to interact with the model
  */
-router.get('/:object/get/:id', function (req, res) {
-  executor.execute(req, res, function (sender) {
-    /** @type {SelectByIdOptions} */
-    const options = {
-      object: req.params.object,
-      id: req.params.id,
-      extended: ['true', '1', 'yes'].indexOf((req.query.extended || '').toLowerCase()) >= 0,
-      fields: (req.query.fields || '*').split(',')
-    }
-    sender(selectById.execute(options), 'result')
-  })
-})
 
 /**
- * @api {get} /api/:object/get Get All objects
- * @apiName GetAllItems
- * @apiGroup API
- * @apiDescription Returns the requested objects, ordered by id
- * @apiParam {String} [object] the type of the object.
- * @apiParam {Integer} [first] the minimum id of the object (not included)
- * @apiParam {Integer} [results] the maximum number of results (100 maximum)
- * @apiParam {Array} [fields] the fields to be returned
+ * @api {post} /api/:object/new Create a new object (global)
+ * @apiGroup Objects
  * @apiVersion 0.0.1
- * @apiExample {curl} Example usage:
- *     curl -i http://localhost:3000/api/contestant/get
- *     curl -i http://localhost:3000/api/mark/get?first=31&results=30
+ * @apiName NewGlobalItem
+ * @apiDescription Restricted to : **Administrator**
+ * <br>Exception : a **Host** can create a `competition`
  *
- * @apiSuccess {Object} result the object request
+ * Properties expected for each object type:
  *
- * @apiSuccessExample {json} Success response
- *     {
- *       "results": [
- *         {
-  *          id: 32,
-  *          firstname: 'John',
-  *          lastname: 'Doe',
-  *          birthdate: '1900-01-01 00:00:01'
- *         }, {
-  *          id: 33,
-  *          firstname: 'Jane',
-  *          lastname: 'Doe',
-  *          birthdate: '1900-01-01 00:00:02'
- *         }
- *       ]
- *     }
+ *    Object    | Properties
+ * ------------ | ----------
+ * age          | name
+ * competition  | date_begin, date_end, name, subname*
+ * contestant   | firstname, lastname, birthdate*
+ * couple       | id_male, id_female
+ * dance        | name
+ * judge        | firstname, lastname, country*
+ * stage        | name, has_notes*
+ * template     | name
+ * subtemplate  | name
+ *
+ * Properties with an __asterisk*__ are optional
+ *
+ * @apiUse OBJECT
+ * @apiParam {Boolean}  [extended=false]  **URL parameter** - Sets the mode (extended or simple) for the query
+ * @apiParam {Array}    properties        **Body** - the properties of the object to create
  */
-router.get('/:object/get', function (req, res) {
-  executor.execute(req, res, function (sender) {
-    /** @type {SelectAllOptions} */
-    const options = {
-      object: req.params.object,
-      id: req.query.first,
-      fields: (req.query.fields || '*').split(','),
-      results: req.query.results
-    }
-    sender(selectAll.execute(options), 'results')
-  })
-})
-
-/**
- * @api {get} /api/:object/:id/add Adds an object associated with the selected object
- * @apiName AddLookup
- * @apiGroup API
- * @apiDescription Returns validation about the objects created
- * @apiParam {String} [object] the type of the object to associated objects with
- * @apiParam {Integer} [id] the id of the object to associate objects with
- * @apiParam {String} [typeToCreate] The type of the object that will be created
- * @apiParam {Array} [fields] the fields to be returned
- * @apiVersion 0.0.1
- * @apiExample {curl} Example usage:
- *     curl -i http://localhost:3000/api/contestant/get
- *     curl -i http://localhost:3000/api/mark/get?first=31&results=30
- *
- * @apiSuccess {Object} result the object request
- *
- * @apiSuccessExample {json} Success response
- *     {
- *       "results": [
- *         {
-  *          id: 32,
-  *          firstname: 'John',
-  *          lastname: 'Doe',
-  *          birthdate: '1900-01-01 00:00:01'
- *         }, {
-  *          id: 33,
-  *          firstname: 'Jane',
-  *          lastname: 'Doe',
-  *          birthdate: '1900-01-01 00:00:02'
- *         }
- *       ]
- *     }
- */
-router.get('/:object/:id/add', function (req, res) {
-  executor.execute(req, res, function (sender) {
-    /** @type {SelectAllOptions} */
-    const options = {
-      object: req.params.object,
-      id: req.query.first,
-      fields: (req.query.fields || '*').split(','),
-      results: req.query.results
-    }
-    sender(selectAll.execute(options), 'results')
-  })
-})
-
-/**
- * @api {post} /api/:object/new Create a new object
- * @apiName InsertNew
- * @apiGroup API
- * @apiDescription Inserts new values of the object type specified
- * @apiParam {String} [object] the type of the objcts
- * @apiParam {Array} [fields] the values to insert
- * @apiVersion 0.0.1
- * @apiExample {curl} Example usage:
- *     curl -i http://localhost:3000/api/contestant/new -X POST -d "firstname":"John","lastname":"Doe","birthdate":"1900/01/01 00:00:01"
- *
- * @apiSuccess {Object} result the result returned
- *
- * @apiSuccessExample {json} Success response
- *     HTTP/1.1 200 OK
- *     {
- *       "result": {
- *         id: 23,
- *         firstname: 'John',
- *         lastname: 'Doe',
- *         birthdate: '1900-01-01 00:00:01'
- *       }
- *     }
- */
-router.post('/:object/new', function (req, res) {
+router.get('/:object/new', function (req, res) {
   executor.execute(req, res, function (sender) {
     /** @type {SelectByIdOptions} */
     const options = {
@@ -202,7 +79,128 @@ router.post('/:object/new', function (req, res) {
   })
 })
 
-//
-// Exports the router
-//
+/**
+ * @api {get} /api/:object/:id Get the object requested (global)
+ * @apiGroup Objects
+ * @apiVersion 0.0.1
+ * @apiName GetGlobalItem
+ * @apiDescription This method returns the requested object, selected by its id, if it exists.
+ * <br>See the new object method for a detailled list of properties returned for each object.
+ * <br><br>The extended mode allows for additional properties returned, mainly related items.
+ * For example, if a competition in extended mode is requested, its progress, couples, events, categories and judges will be returned.
+ *
+ * Additional properties return for each object type:
+ *
+ *    Object    | Properties
+ * ------------ | ----------
+ * age          | N/a
+ * competition  | progress, lists of couples, events, categories, judges
+ * contestant   | N/a
+ * couple       | the male and female contestants
+ * dance        | N/a
+ * judge        | N/a
+ * stage        | N/a
+ * template     | the list of subtemplates
+ * subtemplate  | the list of dances
+ *
+ * NB: the additional objects return in extended mode are **not** extended themselves.
+ *
+ * @apiUse OBJECT
+ * @apiParam {integer}  id                **URL** - the id of the object.
+ * @apiParam {Boolean}  [extended=false]  **URL parameter** - Sets the mode (extended or simple) for the query.
+ * @apiParam {Array}    [fields=*]        **URL parameter** - Reduces the properties returned to the one requested.
+ */
+/**
+ * @api {post} /api/:object/:id Update an existing object (global)
+ * @apiGroup Objects
+ * @apiVersion 0.0.1
+ * @apiName UpdateGlobalItem
+ * @apiDescription See the new object method for a detailled list of properties expected for each object.
+ * <br>Restricted to : **Administrator**
+ * <br>Exception : a **Host** can create a `competition`
+ *
+ * @apiUse OBJECT
+ * @apiParam {integer}  id          **URL** - the id of the object.
+ * @apiParam {Array}    [fields=*]  **URL parameter** - Reduces the properties returned to the one requested.
+ */
+/**
+ * @api {delete} /api/:object/:id Deletes the requested object (global)
+ * @apiGroup Objects
+ * @apiVersion 0.0.1
+ * @apiName DeleteGlobalItem
+ * @apiDescription Restricted to : **Administrator**
+ * <br>__NB__: a **Host** cannot delete a `competition`
+ *
+ * @apiUse OBJECT
+ * @apiParam {integer}  id          **URL** - the id of the object.
+ */
+router.all('/:object/:id', function (req, res) {
+  switch (req.method) {
+    case "GET":
+      executor.execute(req, res, function (sender) {
+        /** @type {SelectByIdOptions} */
+        const options = {
+          object: req.params.object,
+          id: req.params.id,
+          extended: ['true', '1', 'yes'].indexOf((req.query.extended || '').toLowerCase()) >= 0,
+          fields: (req.query.fields || '*').split(',')
+        }
+        sender(selectById.execute(options), 'result')
+      })
+      return
+    case "POST":
+      executor.execute(req, res, function (sender) {
+      })
+      return
+    case "DELETE":
+      executor.execute(req, res, function (sender) {
+      })
+      return
+    default:
+      next()
+  }
+})
+
+/**
+ * @api {get} /api/:object Get the list of objects requested (global)
+ * @apiGroup Objects
+ *
+ * @apiVersion 0.0.1
+ *
+ * @apiDescription Allows to list global objects, with a limit of `results`
+ *
+ * @apiName GetGlobalItems
+ *
+ * @apiUse OBJECT
+ * @apiParam {Integer} [first=0]          **URL parameter** - the minimum id of the object (not included)
+ * @apiParam {Integer} [results=30]       **URL parameter** - the maximum number of results (100 maximum)
+ * @apiParam {Boolean} [extended=false]   **URL parameter** - Sets the mode (extended or simple) for the query.
+ * @apiParam {Array}   [fields=*]         **URL parameter** - Reduces the properties returned to the one requested.
+ */
+router.get('/:object', function (req, res) {
+  executor.execute(req, res, function (sender) {
+    /** @type {SelectAllOptions} */
+    const options = {
+      object: req.params.object,
+      id: req.query.first,
+      fields: (req.query.fields || '*').split(','),
+      results: req.query.results
+    }
+    sender(selectAll.execute(options), 'results')
+  })
+})
+
+
+/**
+ * @apiDefine Associations Objects associations
+ * The calls in this category allow users CRUD methods
+ * to bind elements to others, allowing to construct the model
+ */
+
+/**
+ * @apiDefine Permissions User clearance management
+ * The calls in this category allow users to give or remove
+ * authorizations for users
+ */
+
 module.exports = router
