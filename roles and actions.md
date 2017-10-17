@@ -76,60 +76,95 @@ userFacebook          | Users identified by Facebook        | user
 userGoogle            | Users identified by Google          | user
 userTwitter           | Users identified by Twitter         | user
 
+## Requests and what to expect per object
+
+       Object        | What to expect
+-------------------- | --------------
+category             | + competition + list of stages (+ stageDancers (+competitionCouple + couple)) + dances + judges + couples (categorySubscriptions + competitionCouple + couple)
+categoryDance        | _Not callable_
+categoryJudge        | _Not callable_
+categorySubscription | _Not callable_
+competition          | + categories + competitionCouples
+competitionCouple    | _Not callable_
+contestant           | + couples (+ competitionCouples + categorySubscriptions)
+couple               | + competitionsCouples + categorySubscriptions
+event                | + stage + categoryDances + dancers + judges
+judge                | listing
+mark                 | _Not callable_
+progress             | + event + stage + categoryDances + dancers + judges
+ref_age              | listing
+ref_clearance        | listing
+ref_dance            | listing
+ref_notationMode     | listing
+ref_stage            | listing
+ref_subtemplate      | + dances
+ref_template         | + subtemplates + dances
+stage                | + stageDancers + category + categoryDances + categoryJudges
+stageDancer          | _Not callable_
+user                 | _Not callable_
+userClearance        | _Not callable_
+userFacebook         | _Not callable_
+userGoogle           | _Not callable_
+userTwitter          | _Not callable_
+
 ## Map of relations
 
 ![Map of relations](MLD.jpg)
 
 ## Detailled calls needed per object
-- Referentials
-  - Age, Dance, NotationMode, Stage, Template, Subtemplate, Clearance
-    - List them
-    - In expanded mode, must be complete (template is a two-level lookup)
-    - Must be copied (and not referenced)
-- Category
-  - List them (in a competition)
-  - See its couples
-  - See its stages
-  - See its dances
-- Competition
+### Referentials
+- Age, Dance, NotationMode, Stage, Template, Subtemplate, Clearance
   - List them
-  - See its events
-  - See its categories
-  - See its contestants
-  - See its judges (global in competition)
-  - See its progress
-- Contestant
-  - List them
-  - See their associations in couples and users
-- Couple
-  - List them
-  - See its subscriptions in competitions
-  - See its subscriptions in categories (and results)
-  - See its detailled notes
-  - See its rounds and passage indexes (and hours)
-- Event
-  - List them (in a competition)
-  - See its category (if exists)
-  - See its stage (if exists)
-  - See its presentation dance (if exists)
-  - See its couples (if exists)
-- Judge
-  - List them
-  - See its competitions
-  - See its categories
-  - See its stages (and hours)
-  - See its notes
-- Mark
-  - from profile
-    - For a judge : only his marks in a stage
-    - For a referee : all marks in a stage
-    - For a contestant : after competition, his results
-- Progress
-  - It
-- Stage
-  -
-- User
-  -
+  - In expanded mode, must be complete (template is a two-level lookup)
+  - Must be copied (and not referenced)
+### Category
+- List them (in a competition)
+- See its couples
+- See its stages
+- See its dances
+### Competition
+- List them
+- See its events
+- See its categories
+- See its contestants
+- See its judges (global in competition)
+- See its progress
+### Contestant
+- List them
+- See their associations in couples and users
+### Couple
+- List them
+- See its subscriptions in competitions
+- See its subscriptions in categories (and results)
+- See its detailled notes
+- See its rounds and passage indexes (and hours)
+### Event
+- List them (in a competition)
+- See its category (if exists)
+- See its stage (if exists)
+- See its presentation dance (if exists)
+- See its couples (if exists)
+### Judge
+- List them
+- See its competitions
+- See its categories
+- See its stages (and hours)
+- See its notes
+### Mark
+- from profile
+  - For a judge : only his marks in a stage
+  - For a referee : all marks in a stage
+  - For a contestant : after competition, his results
+### Progress
+- The current event (if applicable)
+- The current dance (if Applicable)
+### Stage
+- List them (for a category)
+- List the dancers associated with
+- Its category
+- The category dances
+### User
+- Should be added when possible
 
 ## API Calls per action
 
