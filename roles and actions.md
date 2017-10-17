@@ -78,7 +78,7 @@ userTwitter           | Users identified by Twitter         | user
 
 ## Requests and what to expect per object
 
-       Object        | What to expect
+Object               | What to expect
 -------------------- | --------------
 category             | + competition + list of stages (+ stageDancers (+competitionCouple + couple)) + dances + judges + couples (categorySubscriptions + competitionCouple + couple)
 categoryDance        | _Not callable_
