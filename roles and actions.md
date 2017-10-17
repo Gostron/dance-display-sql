@@ -89,16 +89,16 @@ competitionCouple    | _Not callable_
 contestant           | + couples (+ competitionCouples + categorySubscriptions)
 couple               | + competitionsCouples + categorySubscriptions
 event                | + stage + categoryDances + dancers + judges
-judge                | listing
+judge                | + categoryJudges
 mark                 | _Not callable_
-progress             | + event + stage + categoryDances + dancers + judges
-ref_age              | listing
-ref_clearance        | listing
-ref_dance            | listing
-ref_notationMode     | listing
-ref_stage            | listing
-ref_subtemplate      | + dances
-ref_template         | + subtemplates + dances
+progress             | _Not callable_
+ref_age              | **listing only**
+ref_clearance        | **listing only**
+ref_dance            | **listing only**
+ref_notationMode     | **listing only**
+ref_stage            | **listing only**
+ref_subtemplate      | _Not callable_
+ref_template         | **listing only** + subtemplates + dances
 stage                | + stageDancers + category + categoryDances + categoryJudges
 stageDancer          | _Not callable_
 user                 | _Not callable_
@@ -115,7 +115,7 @@ userTwitter          | _Not callable_
 ### Referentials
 - Age, Dance, NotationMode, Stage, Template, Subtemplate, Clearance
   - List them
-  - In expanded mode, must be complete (template is a two-level lookup)
+  - Must be complete (template is a two-level lookup)
   - Must be copied (and not referenced)
 ### Category
 - List them (in a competition)
@@ -163,8 +163,6 @@ userTwitter          | _Not callable_
 - List the dancers associated with
 - Its category
 - The category dances
-### User
-- Should be added when possible
 
 ## API Calls per action
 
