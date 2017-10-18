@@ -31,7 +31,12 @@ const router = express.Router({
 
 /**
  * @apiDefine OBJECT
- * @apiParam {String=age, category, competition, contestant, couple, dance, event, judge, stage, template, subtemplate} object **URL** - the object type.
+ * @apiParam {String=category, competition, contestant, couple, event, judge, stage} object **URL** - the object type.
+ */
+
+/**
+ * @apiDefine REFERENCE
+ * @apiParam {String=ref_age, ref_clearance, ref_dance, ref_notationMode, ref_stage, ref_template} reference **URL** - the reference type.
  */
 
 /**
@@ -177,16 +182,38 @@ router.all('/:object/:id', function (req, res) {
  * @apiParam {Boolean} [extended=false]   **URL parameter** - Sets the mode (extended or simple) for the query.
  * @apiParam {Array}   [fields=*]         **URL parameter** - Reduces the properties returned to the one requested.
  */
-router.get('/:object', function (req, res) {
+/**
+ * @api {get} /api/:object Get the list of objects requested (global)
+ * @apiGroup Objects
+ *
+ * @apiVersion 0.0.1
+ *
+ * @apiDescription Allows to list global objects, with a limit of `results`
+ *
+ * @apiName GetGlobalItems
+ *
+ * @apiUse REFERENCE
+ * @apiParam {Integer} [first=0]          **URL parameter** - the minimum id of the object (not included)
+ * @apiParam {Integer} [results=30]       **URL parameter** - the maximum number of results (100 maximum)
+ * @apiParam {Boolean} [extended=false]   **URL parameter** - Sets the mode (extended or simple) for the query.
+ * @apiParam {Array}   [fields=*]         **URL parameter** - Reduces the properties returned to the one requested.
+ */
+router.get('/reference/:reference', function (req, res) {
   executor.execute(req, res, function (sender) {
     /** @type {SelectAllOptions} */
     const options = {
-      object: req.params.object,
+      object: req.params.reference,
       id: req.query.first,
       fields: (req.query.fields || '*').split(','),
       results: req.query.results
     }
     sender(selectAll.execute(options), 'results')
+  })
+})
+
+router.get('/test', function (req, res) {
+  executor.execute(req, res, function (sender) {
+    sender(selectAll.testView(), 'results')
   })
 })
 

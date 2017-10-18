@@ -76,36 +76,40 @@ userFacebook          | Users identified by Facebook        | user
 userGoogle            | Users identified by Google          | user
 userTwitter           | Users identified by Twitter         | user
 
-## Requests and what to expect per object
+## Getting objects and what to expect
 
 Object               | What to expect
 -------------------- | --------------
 category             | + competition + list of stages (+ stageDancers (+competitionCouple + couple)) + dances + judges + couples (categorySubscriptions + competitionCouple + couple)
-categoryDance        | _Not callable_
-categoryJudge        | _Not callable_
-categorySubscription | _Not callable_
 competition          | + categories + competitionCouples
-competitionCouple    | _Not callable_
 contestant           | + couples (+ competitionCouples + categorySubscriptions)
 couple               | + competitionsCouples + categorySubscriptions
 event                | + stage + categoryDances + dancers + judges
 judge                | + categoryJudges
-mark                 | _Not callable_
-progress             | _Not callable_
+stage                | + stageDancers + category + categoryDances + categoryJudges
 ref_age              | **listing only**
 ref_clearance        | **listing only**
 ref_dance            | **listing only**
 ref_notationMode     | **listing only**
 ref_stage            | **listing only**
-ref_subtemplate      | _Not callable_
 ref_template         | **listing only** + subtemplates + dances
-stage                | + stageDancers + category + categoryDances + categoryJudges
-stageDancer          | _Not callable_
-user                 | _Not callable_
-userClearance        | _Not callable_
-userFacebook         | _Not callable_
-userGoogle           | _Not callable_
-userTwitter          | _Not callable_
+
+The following objects cannot be called directly:
+- categoryDance
+- categoryJudge
+- categorySubscription
+- competitionCouple
+- mark
+- progress
+- ref_subtemplate
+- stageDancer
+- user
+- userClearance
+- userFacebook
+- userGoogle
+- userTwitter
+
+These objects are either private, or integrated in others objects (it doesn't make sense to call one directly or to list them globally)
 
 ## Map of relations
 
