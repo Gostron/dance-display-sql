@@ -29,6 +29,12 @@ const router = express.Router({
   strict: true
 })
 
+router.get('/test/:object', function (req, res) {
+  executor.execute(req, res, function (sender) {
+    sender(selectAll.testView(req.params), 'results')
+  })
+})
+
 /**
  * @apiDefine OBJECT
  * @apiParam {String=category, competition, contestant, couple, event, judge, stage} object **URL** - the object type.
@@ -208,12 +214,6 @@ router.get('/reference/:reference', function (req, res) {
       results: req.query.results
     }
     sender(selectAll.execute(options), 'results')
-  })
-})
-
-router.get('/test', function (req, res) {
-  executor.execute(req, res, function (sender) {
-    sender(selectAll.testView(), 'results')
   })
 })
 

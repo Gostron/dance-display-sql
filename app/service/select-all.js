@@ -73,7 +73,20 @@ const SQL_VIEW_LIST = {
       { tableName: 'ref_subtemplate',pkey: 'id', fkeys: [{ table: 'ref_template', col: 'id_template' }] },
       { tableName: 'ref_subtemplate_dance',pkey: 'id', fkeys: [{ table: 'ref_subtemplate', col: 'id_subtemplate' }, {table: 'ref_dance', col: 'id_dance' }] },
       { tableName: 'ref_dance',pkey: 'id' }
-    ]
+    ],
+    simplify: function (results) {
+      return _.map(results, function (result) {
+        return {
+          name: result.name,
+          subtemplates: _.map(result.ref_subtemplate, function (template) {
+            return {
+              name: template.name,
+              dances: _.map(template.ref_subtemplate_dance, function (dance) { return dance.ref_dance.name })
+            }
+          })
+        }
+      })
+    }
   },
   // CATEGORY QUERY
   category: {
@@ -81,33 +94,44 @@ const SQL_VIEW_LIST = {
       LEFT JOIN competition                  ON competition.id                    = category.id_competition\
       LEFT JOIN category_dance               ON category_dance.id_category        = category.id\
       LEFT JOIN category_judge               ON category_judge.id_category        = category.id\
+      LEFT JOIN judge                        ON judge.id                          = category_judge.id_judge\
       LEFT JOIN category_subscription        ON category_subscription.id_category = category.id\
       LEFT JOIN competition_couple           ON competition_couple.id             = category_subscription.id_couple\
       LEFT JOIN couple                       ON couple.id                         = competition_couple.id_couple\
-      LEFT JOIN contestant contestant_male   ON couple.id_male                    = contestant_male.id\
-      LEFT JOIN contestant contestant_female ON couple.id_female                  = contestant_female.id',
+      LEFT JOIN contestant contestant_male   ON contestant_male.id                = couple.id_male\
+      LEFT JOIN contestant contestant_female ON contestant_female.id              = couple.id_female',
     nestTables: true,
     nestingOptions: [
       { tableName: 'category',              pkey: 'id', fkeys: [{ table: 'competition', col: 'id_competition' }]},
       { tableName: 'competition',           pkey: 'id'},
       { tableName: 'category_dance',        pkey: 'id', fkeys: [{ table: 'category', col: 'id_category' }]},
       { tableName: 'category_judge',        pkey: 'id', fkeys: [{ table: 'category', col: 'id_category' }, { table: 'judge', col: 'id_judge' }]},
+      { tableName: 'judge',                 pkey: 'id'},
       { tableName: 'category_subscription', pkey: 'id', fkeys: [{ table: 'category', col: 'id_category' }, { table: 'competition_couple', col: 'id_couple' }]},
       { tableName: 'competition_couple',    pkey: 'id', fkeys: [{ table: 'couple', col: 'id_couple' }]},
       { tableName: 'couple',                pkey: 'id', fkeys: [{ table: 'contestant_male', col: 'id_male' }, { table: 'contestant_female', col: 'id_female' }]},
       { tableName: 'contestant_male',       pkey: 'id'},
       { tableName: 'contestant_female',     pkey: 'id'}
-    ]
+    ],
+    simplify: function (results) {
+      return _.map(results, function (category) {
+        category.category_subscription = _.map(category.category_subscription, function (couple) {
+          return {
+            id_couple: couple.id_couple,
+            number: couple.competition_couple.number,
+            male: couple.competition_couple.couple.contestant_male,
+            female: couple.competition_couple.couple.contestant_female
+          }
+        })
+        category.category_judge = _.map(category.category_judge, 'judge')
+        category.category_dance = _.map(_.sort(category.category_dance, 'index'), 'dance')
+        return category
+      })
+    }
   }
 }
 
 
-const SQL_VIEW_TEST_NESTING_OPTIONS = [
-  { tableName: 'ref_template',pkey: 'id' },
-  { tableName: 'ref_subtemplate',pkey: 'id', fkeys: [{ table: 'ref_template', col: 'id_template' }] },
-  { tableName: 'ref_subtemplate_dance',pkey: 'id', fkeys: [{ table: 'ref_subtemplate', col: 'id_subtemplate' }, {table: 'ref_dance', col: 'id_dance' }] },
-  { tableName: 'ref_dance',pkey: 'id' }
-]
 /**
  *
  * @param {SelectAllOptions} options
@@ -147,13 +171,15 @@ module.exports.execute = function (options) {
  * @param {SelectAllOptions} options
  * @return {promise} the promise callback with the object queried as parameter.
  */
-module.exports.testView = function () {
+module.exports.testView = function (options) {
+
+  var options = SQL_VIEW_LIST[options.object]
   // SQL Querying
   return db.getConnection()
     .then(function (conn) {
-      return conn.query({ sql: SQL_VIEW_TEST, nestTables: true })
+      return conn.query(options)
         .then(function (results) {
-          return nester.convertToNested(results, SQL_VIEW_TEST_NESTING_OPTIONS)
+          return options.simplify(nester.convertToNested(results, options.nestingOptions))
         })
         .finally(function () {
           conn.release()
