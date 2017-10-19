@@ -31,7 +31,7 @@ const router = express.Router({
 
 router.get('/test/:object', function (req, res) {
   executor.execute(req, res, function (sender) {
-    sender(selectAll.testView(req.params), 'results')
+    sender(selectAll.testView(req.params, req.query), 'results')
   })
 })
 

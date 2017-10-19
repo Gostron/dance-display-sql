@@ -80,13 +80,13 @@ userTwitter           | Users identified by Twitter         | user
 
 Object               | What to expect
 -------------------- | --------------
-category             | + competition + list of stages (+ stageDancers (+competitionCouple + couple)) + dances + judges + couples (categorySubscriptions + competitionCouple + couple)
+category             | + competition + stages + stageDancers (+ dances + judges + couples)
 competition          | + categories + competitionCouples
-contestant           | + couples (+ competitionCouples + categorySubscriptions)
-couple               | + competitionsCouples + categorySubscriptions
-event                | + stage + categoryDances + dancers + judges
-judge                | + categoryJudges
-stage                | + stageDancers + category + categoryDances + categoryJudges
+contestant           | **listing only**
+couple               | **listing only**
+event                | + stage + stageDancers + category (+ categoryDances + categoryJudges)
+judge                | **listing only**
+stage                | + stageDancers + category (+ categoryDances + categoryJudges)
 ref_age              | **listing only**
 ref_clearance        | **listing only**
 ref_dance            | **listing only**

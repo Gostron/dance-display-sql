@@ -60,6 +60,24 @@ const SQL_SELECT_ALL =
   'SELECT {{fields}} FROM {{table}} WHERE id > {id} LIMIT {results}'
 
 
+function sqlFilter (sql, id, competitionId, filterId, filterCompetitionId) {
+  var filters = []
+  if (id && filterId) filters.push(filterId + ' = {id}')
+  if (competitionId && filterCompetitionId) filters.push(filterCompetitionId + ' = {competitionId}')
+  if (filters.length > 0)
+    return {
+      sql: {
+        sql: sql.sql + ' WHERE ' + filters.join(' AND '),
+        nestTables: sql.nestTables
+      },
+      options: {
+        id: id,
+        competitionId: competitionId
+      }
+    }
+  else return { sql: sql }
+}
+
 const SQL_VIEW_LIST = {
   // REF_TEMPLATE QUERY
   ref_template: {
@@ -88,45 +106,115 @@ const SQL_VIEW_LIST = {
       })
     }
   },
+  // DANCE QUERY
+  ref_dance: {
+    sql: 'SELECT * FROM ref_dance',
+    nestTables: false,
+  },
+  // CLEARANCE QUERY
+  ref_clearance: {
+    sql: 'SELECT * FROM ref_clearance',
+    nestTables: false,
+  },
+  // NOTATION MODE QUERY
+  ref_notation_mode: {
+    sql: 'SELECT * FROM ref_notation_mode',
+    nestTables: false,
+  },
+  // STAGE QUERY
+  ref_stage: {
+    sql: 'SELECT * FROM ref_stage',
+    nestTables: false,
+  },
+  // JUDGE QUERY
+  judge: {
+    sql: 'SELECT * FROM judge',
+    nestTables: false,
+  },
   // CATEGORY QUERY
   category: {
     sql: 'SELECT * FROM category\
-      LEFT JOIN competition                  ON competition.id                    = category.id_competition\
+      LEFT JOIN view_competition             ON view_competition.id               = category.id_competition\
+      LEFT JOIN stage                        ON stage.id_category                 = category.id\
+      LEFT JOIN view_stage_dancer stage_d    ON stage_d.id_stage                  = stage.id\
       LEFT JOIN category_dance               ON category_dance.id_category        = category.id\
-      LEFT JOIN category_judge               ON category_judge.id_category        = category.id\
-      LEFT JOIN judge                        ON judge.id                          = category_judge.id_judge\
-      LEFT JOIN category_subscription        ON category_subscription.id_category = category.id\
-      LEFT JOIN competition_couple           ON competition_couple.id             = category_subscription.id_couple\
-      LEFT JOIN couple                       ON couple.id                         = competition_couple.id_couple\
-      LEFT JOIN contestant contestant_male   ON contestant_male.id                = couple.id_male\
-      LEFT JOIN contestant contestant_female ON contestant_female.id              = couple.id_female',
+      LEFT JOIN view_category_judge          ON view_category_judge.id_category   = category.id\
+      LEFT JOIN view_category_subscription   ON view_category_subscription.id_category = category.id',
+    sqlFilter: function (sql, id, competitionId) {
+      sqlFilter(sql, id, competitionId, 'category.id', 'category.id_competition')
+    },
     nestTables: true,
     nestingOptions: [
-      { tableName: 'category',              pkey: 'id', fkeys: [{ table: 'competition', col: 'id_competition' }]},
-      { tableName: 'competition',           pkey: 'id'},
-      { tableName: 'category_dance',        pkey: 'id', fkeys: [{ table: 'category', col: 'id_category' }]},
-      { tableName: 'category_judge',        pkey: 'id', fkeys: [{ table: 'category', col: 'id_category' }, { table: 'judge', col: 'id_judge' }]},
-      { tableName: 'judge',                 pkey: 'id'},
-      { tableName: 'category_subscription', pkey: 'id', fkeys: [{ table: 'category', col: 'id_category' }, { table: 'competition_couple', col: 'id_couple' }]},
-      { tableName: 'competition_couple',    pkey: 'id', fkeys: [{ table: 'couple', col: 'id_couple' }]},
-      { tableName: 'couple',                pkey: 'id', fkeys: [{ table: 'contestant_male', col: 'id_male' }, { table: 'contestant_female', col: 'id_female' }]},
-      { tableName: 'contestant_male',       pkey: 'id'},
-      { tableName: 'contestant_female',     pkey: 'id'}
+      { tableName: 'category',                    pkey: 'id', fkeys: [{ table: 'view_competition', col: 'id_competition' }]},
+      { tableName: 'stage',                       pkey: 'id', fkeys: [{ table: 'category', col: 'id_category' }]},
+      { tableName: 'stage_d',                     pkey: 'id', fkeys: [{ table: 'stage', col: 'id_stage' }]},
+      { tableName: 'view_competition',            pkey: 'id'},
+      { tableName: 'category_dance',              pkey: 'id', fkeys: [{ table: 'category', col: 'id_category' }]},
+      { tableName: 'view_category_judge',         pkey: 'id', fkeys: [{ table: 'category', col: 'id_category' }]},
+      { tableName: 'view_category_subscription',  pkey: 'id', fkeys: [{ table: 'category', col: 'id_category' }]}
     ],
     simplify: function (results) {
       return _.map(results, function (category) {
-        category.category_subscription = _.map(category.category_subscription, function (couple) {
-          return {
-            id_couple: couple.id_couple,
-            number: couple.competition_couple.number,
-            male: couple.competition_couple.couple.contestant_male,
-            female: couple.competition_couple.couple.contestant_female
-          }
+        category.stages = _.map(_.sortBy(category.stage, 'index'), function (stage) {
+          stage.dancers = _.map(stage.stage_d, function (couple) {
+            delete couple.id_stage
+            delete couple.id_competition
+            return couple
+          })
+          delete stage.stage_d
+          delete stage.id_category
+          return stage
         })
-        category.category_judge = _.map(category.category_judge, 'judge')
-        category.category_dance = _.map(_.sort(category.category_dance, 'index'), 'dance')
+        category.subscriptions = _.map(category.view_category_subscription, function (couple) {
+          delete couple.id_category
+          delete couple.id_competition
+          return couple
+        })
+        category.judges = _.map(category.view_category_judge, function (judge) {
+          delete judge.id_category
+          return judge
+        })
+        category.dances = _.map(_.sortBy(category.category_dance, 'index'), 'dance')
+        delete category.stage
+        delete category.view_category_subscription
+        delete category.view_category_judge
+        delete category.category_dance
+        delete category.id_competition
+        category.competition = category.view_competition
+        delete category.view_competition
         return category
       })
+    }
+  },
+  // COMPETITION QUERY
+  competition: {
+    sql: 'SELECT * FROM view_competition',
+    nestTables: false,
+    sqlFilter: function (sql, id) {
+      sqlFilter(sql, id, null, 'category.id')
+    },
+  },
+  // EVENT QUERY
+  event: {
+    sql: 'SELECT * FROM view_event\
+      LEFT JOIN view_stage_dancer stage_d    ON view_event.id_stage    = stage_d.id\
+      LEFT JOIN category_dance               ON view_event.id_category = category_dance.id\
+      LEFT JOIN view_category_judge          ON view_event.id_category = view_category_judge.id_category\
+      LEFT JOIN view_category_subscription   ON view_event.id_category = view_category_subscription.id_category',
+    sqlFilter: function (sql, id, competitionId) {
+      sqlFilter(sql, id, competitionId, 'view_event.id', 'view_event.id_competition')
+    },
+    nestTables: true,
+    nestingOptions: [
+      { tableName: 'view_event',                  pkey: 'id', fkeys: [{ table: 'stage_d', col: 'id_stage' }, { table: 'view_category_subscription', col: 'id_category' }, { table: 'view_category_judge', col: 'id_category' }, { table: 'category_dance', col: 'id_category' }]},
+      { tableName: 'stage_d',                     pkey: 'id'},
+      { tableName: 'category_dance',              pkey: 'id'},
+      { tableName: 'view_category_judge',         pkey: 'id'},
+      { tableName: 'view_category_subscription',  pkey: 'id'}
+    ],
+    simplify: function (results) {
+      // TODO
+      return results
     }
   }
 }
@@ -171,15 +259,26 @@ module.exports.execute = function (options) {
  * @param {SelectAllOptions} options
  * @return {promise} the promise callback with the object queried as parameter.
  */
-module.exports.testView = function (options) {
+module.exports.testView = function (options, query) {
 
   var options = SQL_VIEW_LIST[options.object]
+  var sql = options
+  var parameters = null
+  if (options.sqlFilter) {
+    var filter = options.sqlFilter(sql, query.id, query.competitionId)
+    sql = filter.sql
+    parameters = filter.options
+  }
   // SQL Querying
   return db.getConnection()
     .then(function (conn) {
-      return conn.query(options)
+      return conn.query(sql, parameters)
         .then(function (results) {
-          return options.simplify(nester.convertToNested(results, options.nestingOptions))
+          if (options.nestTables && options.nestingOptions) {
+            if (options.simplify)
+              return options.simplify(nester.convertToNested(results, options.nestingOptions))
+            else return nester.convertToNested(results, options.nestingOptions)
+          } else return results
         })
         .finally(function () {
           conn.release()
