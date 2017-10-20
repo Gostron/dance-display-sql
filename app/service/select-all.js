@@ -67,19 +67,27 @@ function reworkObject (object, labels) {
       // If the property begins with the label, reunite it in a sub-object
       if (key.indexOf(label) === 0) {
         var newKey = key.length > label.length ? key.substring(label.length + 1) : 'name'
-        if (!object[label]) object[label] = {}
-        object[label][newKey] = object[key]
-        delete object[key]
+        // If the label property doesn't exist, create the object
+        if (object[label] === undefined) object[label] = {}
+        // If the label property existed previously, put it in a sub-object
+        else if (Object.prototype.toString.call(object[label]) !== '[object Object]') {
+          var value = object[label]
+          object[label] = {}
+          object[label].name = value
+        }
+        if (key !== label) {
+          object[label][newKey] = object[key]
+          delete object[key]
+        }
       }
     })
     // Recursively for arrays
     if (Array.isArray(object[key])) {
-      for (let i = 0; i < object[key].length; i++)
-      object[key][i] = reworkObject(object[key][i], labels)
+      object[key] = _.map(object[key], function (subobject) { return reworkObject(subobject, labels) })
     }
     // Recursively for sub-objects
     else if (Object.prototype.toString.call(object[key]) === '[object Object]') {
-      object[key] = reworkObject(object[key], labels)
+      reworkObject(object[key], labels)
     }
   }
   return object
@@ -173,11 +181,10 @@ const SQL_VIEW_LIST = {
   },
   // CATEGORY QUERY
   category: {
-    sql: 'SELECT * FROM category\
+    sql: 'SELECT * FROM view_category category\
       LEFT JOIN view_competition             ON view_competition.id               = category.id_competition\
       LEFT JOIN stage                        ON stage.id_category                 = category.id\
       LEFT JOIN view_stage_dancer stage_d    ON stage_d.id_stage                  = stage.id\
-      LEFT JOIN category_dance               ON category_dance.id_category        = category.id\
       LEFT JOIN view_category_judge          ON view_category_judge.id_category   = category.id\
       LEFT JOIN view_category_subscription   ON view_category_subscription.id_category = category.id',
     sqlFilter: function (sql, id, competitionId) {
@@ -189,7 +196,6 @@ const SQL_VIEW_LIST = {
       { tableName: 'stage',                       pkey: 'id', fkeys: [{ table: 'category', col: 'id_category' }]},
       { tableName: 'stage_d',                     pkey: 'id', fkeys: [{ table: 'stage', col: 'id_stage' }]},
       { tableName: 'view_competition',            pkey: 'id'},
-      { tableName: 'category_dance',              pkey: 'id', fkeys: [{ table: 'category', col: 'id_category' }]},
       { tableName: 'view_category_judge',         pkey: 'id', fkeys: [{ table: 'category', col: 'id_category' }]},
       { tableName: 'view_category_subscription',  pkey: 'id', fkeys: [{ table: 'category', col: 'id_category' }]}
     ],
@@ -214,11 +220,9 @@ const SQL_VIEW_LIST = {
           delete judge.id_category
           return judge
         })
-        category.dances = _.map(_.sortBy(category.category_dance, 'index'), 'dance')
         delete category.stage
         delete category.view_category_subscription
         delete category.view_category_judge
-        delete category.category_dance
         delete category.id_competition
         category.competition = category.view_competition
         delete category.view_competition
@@ -363,16 +367,12 @@ module.exports.testView = function (options, query) {
       return conn.query(sql, parameters)
         .then(function (results) {
           var output = results
-          /// Results obtained here
           // Filter for nestification
-          if (options.nestTables && options.nestingOptions)
-            output = nester.convertToNested(results, options.nestingOptions)
+          if (options.nestTables && options.nestingOptions) output = nester.convertToNested(results, options.nestingOptions)
           // Additional simplification (deleting props, etc)
-          if (options.simplify)
-            output = options.simplify(output)
+          if (options.simplify) output = options.simplify(output)
           // Property reunification in object
-          if (options.reworkLabels)
-            output = _.map(output, function (result) { return reworkObject(result, options.reworkLabels) })
+          if (options.reworkLabels) output = _.map(output, function (result) { return reworkObject(result, options.reworkLabels) })
 
           return output
         })
